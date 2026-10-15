@@ -127,10 +127,10 @@ Gate: complete factory regression checklist, wall board visually attached, bound
 
 ### Phase 6 — operations dashboard and analytics
 
-- [ ] Create operations pages `inventory/page.tsx`, `production/page.tsx`, `replenishment/page.tsx`, `analytics/page.tsx` under `src/app/(operations)`; extend navigation and existing dashboard components.
-- [ ] Create `src/server/queries/{dashboard,inventory,production,replenishment,analytics}.ts`, `src/components/analytics/{ProductionCharts,InventoryCharts,KanbanCharts,StationCharts,CoverageChart}.tsx` and `src/components/dashboard/SimulationSummary.tsx`.
-- [ ] Create `src/app/api/simulation-runs/[id]/dashboard/route.ts`, `src/app/api/simulation-runs/[id]/analytics/route.ts`; extend run aggregates/migrations as required.
-- [ ] Add `tests/integration/analyticsReconciliation.test.ts` and `tests/e2e/operationsViews.spec.ts`.
+- [x] Create operations pages `inventory/page.tsx`, `production/page.tsx`, `replenishment/page.tsx`, `analytics/page.tsx` under `src/app/(operations)`; extend navigation and existing dashboard components.
+- [x] Create `src/server/queries/{dashboard,inventory,production,replenishment,analytics}.ts`, `src/components/analytics/{ProductionCharts,InventoryCharts,KanbanCharts,StationCharts,CoverageChart}.tsx` and `src/components/dashboard/SimulationSummary.tsx`.
+- [x] Create `src/app/api/simulation-runs/[id]/dashboard/route.ts`, `src/app/api/simulation-runs/[id]/analytics/route.ts`; extend run aggregates/migrations as required.
+- [x] Add `tests/integration/analyticsReconciliation.test.ts` and `tests/e2e/operationsViews.spec.ts`.
 
 Gate: simulated time/status, completed/WIP/waiting racks, consumption, requests, stockouts, downtime and throughput; all 10 requested charts (daily/monthly production, consumption, inventory history, replenishment frequency, stockouts, station utilization, downtime causes, warehouse trends, coverage). Run-scoped filtering and material/station detail must reconcile to raw events and finite balances. No synthetic baseline offsets remain in analytical metrics.
 
