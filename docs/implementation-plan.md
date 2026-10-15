@@ -136,9 +136,9 @@ Gate: simulated time/status, completed/WIP/waiting racks, consumption, requests,
 
 ### Phase 7 — scenarios and comparison
 
-- [ ] Create `src/app/(operations)/scenarios/page.tsx`, `src/components/scenarios/{ScenarioEditor,ScenarioComparison}.tsx`, `src/domain/manufacturing/scenarioPresets.ts`, `src/server/services/scenarioService.ts`.
-- [ ] Create `src/app/api/scenarios/route.ts`, `src/app/api/scenarios/[id]/route.ts`, `src/app/api/scenarios/compare/route.ts`; extend persisted scenario/run schemas and input hashes.
-- [ ] Add `tests/unit/scenarioPresets.test.ts`, `tests/integration/scenarioComparison.test.ts`, `tests/e2e/scenarioRuns.spec.ts`.
+- [x] Create `src/app/(operations)/scenarios/page.tsx`, `src/components/scenarios/{ScenarioEditor,ScenarioComparison}.tsx`, `src/domain/manufacturing/scenarioPresets.ts`, `src/server/services/scenarioService.ts`.
+- [x] Create `src/app/api/scenarios/route.ts`, `src/app/api/scenarios/[id]/route.ts`, `src/app/api/scenarios/compare/route.ts`; extend persisted scenario/run schemas and input hashes.
+- [x] Add `tests/unit/scenarioPresets.test.ts`, `tests/integration/scenarioComparison.test.ts`, `tests/e2e/scenarioRuns.spec.ts`.
 
 Gate: start/duration/model/demand/shifts/days/warehouse/point-of-use/lead/capacity/safety/handler/seed controls; actual six-calendar-month default; baseline/increased demand/delayed supply/reduced inventory/optimized Kanban/custom presets; consistent baseline input with named overrides only; completed racks, throughput, stockouts, downtime, inventory utilization, replenishments, average stock, station utilization and baseline deltas; refresh persistence and reproducibility.
 
