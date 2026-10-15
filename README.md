@@ -1,5 +1,15 @@
 # GPU Rack Assembly Facility • 3D Digital Twin
 
+## Manufacturing extension status
+
+Phase 0 audit and planning are documented on `feature/manufacturing-digital-twin`:
+
+- [Current architecture and baseline verification](docs/architecture/current-system.md)
+- [Target architecture and proposed database schema](docs/architecture/target-system.md)
+- [Phased checklist, exact file plan and Phase 1 sequence](docs/implementation-plan.md)
+
+The existing application builds after `npm ci`. It currently has no automated test script and no configured ESLint setup. Basic browser smoke verified the rendered factory, camera mode selection, Kanban, demo transfer events, reset and pause controls; full pointer-lock and proximity regression testing remains outstanding. Existing telemetry and production metrics are demonstration values; the supplied manufacturing JSON fixtures are synthetic. Database, import and manufacturing simulation extensions are planned, not implemented. Phase 1 awaits approval.
+
 An interactive, production-quality 3D digital twin of an automated datacenter GPU rack assembly facility built with **Next.js**, **React Three Fiber (Three.js)**, **TypeScript**, **Tailwind CSS**, and **Zustand**.
 
 ![GPU Rack Assembly Line](https://img.shields.io/badge/Status-Production%20Ready-emerald)
