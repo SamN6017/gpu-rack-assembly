@@ -462,3 +462,24 @@ model InventoryReservation {
   @@index([materialId, locationId, status])
   @@index([locationId])
 }
+
+model ImportDocument {
+  id String @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  filename String
+  checksum String @unique
+  content Bytes
+  mediaType String
+}
+
+model ImportRow {
+  id String @id @default(uuid()) @db.Uuid
+  batchId String @db.Uuid
+  worksheet String
+  rowNumber Int
+  entityType String
+  normalizedJson Json
+  rawJson Json
+  @@unique([batchId, worksheet, rowNumber])
+  @@index([batchId])
+}

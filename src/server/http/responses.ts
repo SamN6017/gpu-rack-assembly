@@ -1,4 +1,5 @@
 import "server-only";
+import { validSession, sameOrigin } from "./session";
 import { timingSafeEqual } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
@@ -12,6 +13,14 @@ export function authorize(request: Request): void {
       "Manufacturing API access is not configured",
       503,
     );
+  if (validSession(request)) {
+    if (
+      !["GET", "HEAD"].includes(request.method) &&
+      !sameOrigin(request)
+    )
+      throw new DomainError("ORIGIN", "Same-origin requests are required", 403);
+    return;
+  }
   const supplied =
     request.headers.get("authorization")?.replace(/^Bearer /, "") || "";
   const a = Buffer.from(configured),

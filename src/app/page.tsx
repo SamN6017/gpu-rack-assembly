@@ -19,6 +19,7 @@ export default function Home() {
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#cbd5e1] select-none">
+      <a href="/data-sources" className="absolute bottom-5 left-5 z-40 rounded-lg bg-slate-950 px-4 py-2 text-sm text-cyan-300 shadow-lg">Operations ↗</a>
       {/* 1. Full-Screen 3D Interactive Virtual Factory Floor */}
       <FactoryViewer />
 

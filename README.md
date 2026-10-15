@@ -126,3 +126,7 @@ src/
 
 ## 📄 License
 MIT
+
+### Operations workspace
+
+Open `/data-sources` and enter `MANUFACTURING_API_TOKEN` from your local `.env` to establish an eight-hour browser session. Upload Excel/CSV material catalogs, select and map columns, validate and confirm. Original bytes and row provenance are retained. Assumptions are proposed and approved as immutable versions. See [import implementation record](docs/phase-2-completion.md).
