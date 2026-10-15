@@ -33,7 +33,7 @@ export async function setupDatabase() {
 export async function clearDatabase() {
   // Fixed allowlist; called only after the URL guard, in this dedicated test DB.
   await db.$executeRawUnsafe(
-    'TRUNCATE TABLE "InventoryEvent", "InventoryReservation", "InventoryBalance", "ReplenishmentOrder", "KanbanRule", "ProductionOrder", "SimulationEvent", "SimulationRun", "SimulationScenario", "BillOfMaterial", "Material", "RackModel", "InventoryLocation", "DataProvenance", "ImportBatch", "DataSource", "DataAssumption", "Workstation" RESTART IDENTITY CASCADE',
+    'TRUNCATE TABLE "InventoryEvent", "InventoryReservation", "InventoryBalance", "ReplenishmentOrder", "KanbanRule", "ProductionOrder", "SimulationEvent", "SimulationRun", "SimulationScenario", "BillOfMaterial", "Material", "RackModel", "InventoryLocation", "DataProvenance", "ImportBatch", "DataSource", "DataAssumption", "Workstation", "ManufacturingInboxEvent" RESTART IDENTITY CASCADE',
   );
 }
 export async function fixture() {

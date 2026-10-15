@@ -151,10 +151,10 @@ Gate: Excel/CSV/PDF share authoritative aggregates; executive, production, inven
 
 ### Phase 9 — future read-only live/replay
 
-- [ ] Create `src/domain/manufacturing/manufacturingEvent.ts`, `src/services/adapters/{importEventAdapter,restEventAdapter,websocketEventAdapter,sseEventAdapter,mockLiveAdapter,mqttContract}.ts`, `src/services/replayAssemblyProvider.ts`.
-- [ ] Extend `assemblyDataProvider.ts`, replace outbound-command methods in `realtimeAssemblyProvider.ts` with read-only capability enforcement; extend provider selection and source freshness UI.
-- [ ] Create `src/server/services/{ingestionService,reconciliationService}.ts`, raw-event/cursor/audit migrations, `src/components/data/SourceStatus.tsx`; add authenticated/authorized integration boundary before real connections. Store secret references, not credentials in source configuration JSON sent to clients.
-- [ ] Add `tests/unit/liveEventValidation.test.ts`, `tests/integration/{liveDeduplication,outOfOrderReconciliation,modeIsolation}.test.ts`, `tests/e2e/sourceSwitching.spec.ts`.
+- [x] Create `src/domain/manufacturing/manufacturingEvent.ts`, `src/services/adapters/{importEventAdapter,restEventAdapter,websocketEventAdapter,sseEventAdapter,mockLiveAdapter,mqttContract}.ts`, `src/services/replayAssemblyProvider.ts`.
+- [x] Extend `assemblyDataProvider.ts`, replace outbound-command methods in `realtimeAssemblyProvider.ts` with read-only capability enforcement; extend provider selection and source freshness UI.
+- [x] Create `src/server/services/{ingestionService,reconciliationService}.ts`, raw-event/cursor/audit migrations, `src/components/data/SourceStatus.tsx`; add authenticated/authorized integration boundary before real connections. Store secret references, not credentials in source configuration JSON sent to clients.
+- [x] Add `tests/unit/liveEventValidation.test.ts`, `tests/integration/{liveDeduplication,outOfOrderReconciliation,modeIsolation}.test.ts`, `tests/e2e/sourceSwitching.spec.ts`.
 
 Gate: normalized contract, duplicate/delayed/out-of-order support, raw references, audit trail, visible connection freshness; mock source switch and replay work; simulation cannot change actual inventory; live mode never sends control commands. No external credentials required. MQTT contract exists, and actual broker integration remains a separately configured future transport.
 
