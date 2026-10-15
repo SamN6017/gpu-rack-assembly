@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 const links = [
   ["/", "Factory"],
-  ["/data-sources", "Data sources"],
+  ["/kanban", "Kanban"], ["/inventory", "Inventory"], ["/production", "Production"], ["/replenishment", "Replenishment"], ["/analytics", "Analytics"], ["/scenarios", "Scenarios"], ["/reports", "Reports"], ["/data-sources", "Data sources"],
 ];
 export async function api<T = unknown>(
   url: string,

@@ -8,6 +8,7 @@ import { EnterFactoryScreen } from "@/components/modals/EnterFactoryScreen";
 import { KanbanModal } from "@/components/modals/KanbanModal";
 import { StationInspectModal } from "@/components/modals/StationInspectModal";
 import { RackDetailModal } from "@/components/racks/RackDetailModal";
+import { FactoryPlayback } from "@/components/factory/FactoryPlayback";
 import { AddRackModal } from "@/components/modals/AddRackModal";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
 
   useEffect(() => {
     initialize();
+    return () => useAssemblyStore.getState().dispose();
   }, [initialize]);
 
   return (
@@ -25,6 +27,7 @@ export default function Home() {
 
       {/* 2. Unobtrusive Minimalist Factory HUD (Crosshair, [E] prompt, Mode Switch, Minimap) */}
       <FactoryHUD />
+      <FactoryPlayback />
 
       {/* 3. Welcome Briefing & POV Controls */}
       <EnterFactoryScreen />

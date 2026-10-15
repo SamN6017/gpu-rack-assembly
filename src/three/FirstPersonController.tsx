@@ -26,7 +26,10 @@ const COLLIDERS = [
   { minX: 25, maxX: 34, minZ: -2.5, maxZ: 2.5 },
 
   // Physical Kanban Board Foundation
-  { minX: -5.5, maxX: 5.5, minZ: -15.8, maxZ: -13.0 },
+  { minX: -6.6, maxX: 6.6, minZ: -17, maxZ: -16.0 },
+  { minX: -30, maxX: -20, minZ: -11.2, maxZ: -8.8 },
+  { minX: -18, maxX: -14, minZ: -9.5, maxZ: -6.5 },
+  ...[-18,-9,0,9,18].map(x=>({minX:x-2,maxX:x+2,minZ:-5.5,maxZ:-4.1})),
 
   // Queue Terminal Workstation
   { minX: -26.5, maxX: -23.5, minZ: 3.5, maxZ: 5.5 },
@@ -213,11 +216,11 @@ export function FirstPersonController() {
     let minDistance = 999;
 
     // 1. Check Physical Kanban Board: at [0, 0, -14]
-    const distToKanban = Math.hypot(px - 0, pz - (-14));
+    const distToKanban = Math.hypot(px - 0, pz - (-16.45));
     if (distToKanban < 4.8 && distToKanban < minDistance) {
       minDistance = distToKanban;
       nearestPrompt = {
-        label: "Open Live Kanban Board",
+        label: "Open Simulation Kanban Board",
         actionKey: "E",
         targetType: "KANBAN",
       };

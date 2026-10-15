@@ -483,3 +483,15 @@ model ImportRow {
   @@unique([batchId, worksheet, rowNumber])
   @@index([batchId])
 }
+
+model ManufacturingInboxEvent {
+ id String @id @default(uuid()) @db.Uuid
+ createdAt DateTime @default(now()) @db.Timestamptz(3)
+ sourceSystem String
+ eventId String
+ sourceTimestamp DateTime @db.Timestamptz(3)
+ payloadHash String
+ normalizedJson Json
+ @@unique([sourceSystem,eventId])
+ @@index([sourceSystem,sourceTimestamp])
+}

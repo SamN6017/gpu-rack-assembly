@@ -14,7 +14,8 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "NODE_OPTIONS=--conditions=react-server tsx prisma/seed.ts",
-    "format:check": "prettier --check \"src/server/**/*.ts\" \"src/domain/**/*.ts\" \"src/app/api/**/*.ts\" \"tests/**/*.ts\" \"prisma/*.ts\" \"*.mts\""
+    "format:check": "prettier --check \"src/server/**/*.ts\" \"src/domain/**/*.ts\" \"src/app/api/**/*.ts\" \"tests/**/*.ts\" \"prisma/*.ts\" \"*.mts\"",
+    "worker": "NODE_OPTIONS=--conditions=react-server tsx scripts/run-simulation-worker.ts"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
@@ -28,6 +29,7 @@
     "jszip": "^3.10.1",
     "lucide-react": "^0.453.0",
     "next": "15.5.28",
+    "pdf-lib": "^1.17.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "server-only": "0.0.1",

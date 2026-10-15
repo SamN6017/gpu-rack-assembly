@@ -61,7 +61,7 @@ export function Station3D({ station, rack }: Station3DProps) {
   let progressPct = 0;
 
   if (station.rackId && rack && station.enteredAt) {
-    const elapsedSec = Math.max(0, (Date.now() - station.enteredAt) / 1000);
+    const elapsedSec = Math.max(0, ((useAssemblyStore.getState().virtualTime ?? Date.now()) - station.enteredAt) / 1000);
     const duration = station.durationSeconds || 720;
     const remainingSec = Math.max(0, duration - elapsedSec);
     progressPct = Math.min(100, Math.round((elapsedSec / duration) * 100));

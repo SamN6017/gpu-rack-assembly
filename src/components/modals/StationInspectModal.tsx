@@ -38,7 +38,7 @@ export function StationInspectModal() {
   let progressPct = 0;
 
   if (station.rackId && rack && station.enteredAt) {
-    const elapsedSec = Math.max(0, (Date.now() - station.enteredAt) / 1000);
+    const elapsedSec = Math.max(0, ((useAssemblyStore.getState().virtualTime ?? Date.now()) - station.enteredAt) / 1000);
     const duration = station.durationSeconds || 720;
     const remainingSec = Math.max(0, duration - elapsedSec);
     progressPct = Math.min(100, Math.round((elapsedSec / duration) * 100));
@@ -160,6 +160,7 @@ export function StationInspectModal() {
                   <span>Fast-Advance Station</span>
                 </button>
                 <button
+                  disabled={useAssemblyStore.getState().readOnly}
                   onClick={() => toggleStationBlock(station.id)}
                   className={`flex items-center space-x-1 py-2 px-3 rounded-lg text-xs font-semibold border transition ${
                     station.status === "BLOCKED"

@@ -36,7 +36,7 @@ export function RackDetailModal() {
   let progressPct = 0;
   let remainingText = "N/A";
   if (stationObj && stationObj.enteredAt) {
-    const elapsedSec = Math.max(0, (Date.now() - stationObj.enteredAt) / 1000);
+    const elapsedSec = Math.max(0, ((useAssemblyStore.getState().virtualTime ?? Date.now()) - stationObj.enteredAt) / 1000);
     const duration = stationObj.durationSeconds || 720;
     progressPct = Math.min(100, Math.round((elapsedSec / duration) * 100));
     const rem = Math.max(0, duration - elapsedSec);
@@ -205,7 +205,8 @@ export function RackDetailModal() {
         <div className="bg-[#0f1728] border-t border-slate-800 p-4 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => stressTestRack(rack.id)}
+              disabled={useAssemblyStore.getState().readOnly}
+                  onClick={() => stressTestRack(rack.id)}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-700/60 rounded-lg text-xs font-semibold shadow transition"
               title="Inject GPU computational load to stress test cooling"
             >

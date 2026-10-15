@@ -198,15 +198,16 @@ export function KanbanModal() {
 
                 <div className="pt-2 border-t border-slate-800 space-y-1.5">
                   <button
+                    disabled={useAssemblyStore.getState().readOnly || queueRackIds.length === 0}
                     onClick={() => dispatchNextFromQueue()}
-                    disabled={queueRackIds.length === 0}
                     className="w-full py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:bg-slate-900 disabled:text-slate-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition"
                   >
                     <span>Dispatch Next</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() => openModal("ADD_RACK")}
+                    disabled={useAssemblyStore.getState().readOnly}
+                  onClick={() => openModal("ADD_RACK")}
                     className="w-full py-1.5 rounded-lg bg-purple-950/80 hover:bg-purple-900 border border-purple-800/80 text-purple-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
                   >
                     <PlusCircle className="w-3.5 h-3.5" />
@@ -223,7 +224,7 @@ export function KanbanModal() {
                 let elapsed = "00:00";
 
                 if (stn.rackId && rack && stn.enteredAt) {
-                  const el = Math.max(0, (Date.now() - stn.enteredAt) / 1000);
+                  const el = Math.max(0, ((useAssemblyStore.getState().virtualTime ?? Date.now()) - stn.enteredAt) / 1000);
                   const dur = stn.durationSeconds || 720;
                   const rem = Math.max(0, dur - el);
                   prog = Math.min(100, Math.round((el / dur) * 100));
@@ -319,7 +320,8 @@ export function KanbanModal() {
                     {stn.rackId && (
                       <div className="pt-2 border-t border-slate-800/80 flex items-center space-x-1">
                         <button
-                          onClick={() => advanceStation(stn.id)}
+                          disabled={useAssemblyStore.getState().readOnly}
+                  onClick={() => advanceStation(stn.id)}
                           className="flex-1 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-bold flex items-center justify-center gap-1 transition"
                           title="Advance station immediately"
                         >
@@ -327,7 +329,8 @@ export function KanbanModal() {
                           <span>Advance</span>
                         </button>
                         <button
-                          onClick={() => toggleStationBlock(stn.id)}
+                          disabled={useAssemblyStore.getState().readOnly}
+                  onClick={() => toggleStationBlock(stn.id)}
                           className={`px-2 py-1 rounded text-[10px] font-bold border transition ${
                             stn.status === "BLOCKED"
                               ? "bg-emerald-600 text-white border-emerald-500"

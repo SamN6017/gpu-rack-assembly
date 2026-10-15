@@ -9,6 +9,8 @@ import {
 import { Rack } from "@/types/rack";
 import { Station } from "@/types/station";
 import { MockAssemblyDataProvider } from "@/services/mockAssemblyProvider";
+import { IAssemblyDataProvider } from "@/services/assemblyDataProvider";
+import { SimulationAssemblyProvider } from "@/services/simulationAssemblyProvider";
 
 export type ViewMode = "WALK" | "OVERVIEW";
 export type ActiveModal = "NONE" | "KANBAN" | "STATION" | "RACK" | "ADD_RACK" | "HELP";
@@ -21,6 +23,17 @@ export interface InteractablePrompt {
 }
 
 interface AssemblyState {
+  mode: "SIMULATION" | "LIVE" | "REPLAY" | "LEGACY_DEMO";
+  virtualTime?: number;
+  readOnly: boolean;
+  manufacturing?: import("@/simulation/core/types").Snapshot;
+  manufacturingConfig?: import("@/simulation/core/types").SimulationConfig;
+  useProvider: (provider: IAssemblyDataProvider) => void;
+  useLegacyDemo: () => void;
+  dispose: () => void;
+  stepEvent: () => void;
+  stepMinute: () => void;
+  jumpTo: (time: number) => void;
   // Core Line State
   stations: Station[];
   racks: Record<string, Rack>;
@@ -67,9 +80,22 @@ interface AssemblyState {
   setCameraPreset: (preset: "Overview" | "Station 1" | "Station 2" | "Station 3" | "Station 4" | "Station 5" | "Queue" | "Completed" | "Kanban") => void;
 }
 
-let activeProvider: MockAssemblyDataProvider | null = null;
+let activeProvider: IAssemblyDataProvider | null = null;
+let unsubscribe: (() => void) | null = null;
 
 export const useAssemblyStore = create<AssemblyState>((set, get) => ({
+  mode: "SIMULATION", readOnly: true,
+  useProvider: (provider) => {
+    unsubscribe?.(); activeProvider?.destroy(); activeProvider=provider;
+    const apply=(snapshot:AssemblySnapshot)=>set({stations:snapshot.stations,racks:snapshot.racks,queueRackIds:snapshot.queueRackIds,completedRackIds:snapshot.completedRackIds,metrics:snapshot.metrics,events:snapshot.events,config:snapshot.config,mode:snapshot.mode||"LEGACY_DEMO",virtualTime:snapshot.virtualTime,readOnly:snapshot.readOnly??false,manufacturing:snapshot.manufacturing,manufacturingConfig:snapshot.manufacturingConfig});
+    unsubscribe=provider.subscribe(apply);
+    void provider.initialize().then(snapshot=>{if(activeProvider===provider)apply(snapshot);}).catch(()=>{if(activeProvider===provider)set({readOnly:true});});
+  },
+  useLegacyDemo: () => get().useProvider(new MockAssemblyDataProvider()),
+  dispose: () => {unsubscribe?.();activeProvider?.destroy();unsubscribe=null;activeProvider=null;},
+  stepEvent: () => {const p=activeProvider as IAssemblyDataProvider & {stepEvent?:()=>void};p?.stepEvent?.();},
+  stepMinute: () => {const p=activeProvider as IAssemblyDataProvider & {stepMinute?:()=>void};p?.stepMinute?.();},
+  jumpTo: (time) => {const p=activeProvider as IAssemblyDataProvider & {jumpTo?:(t:number)=>void};p?.jumpTo?.(time);},
   stations: [],
   racks: {},
   queueRackIds: [],
@@ -106,21 +132,7 @@ export const useAssemblyStore = create<AssemblyState>((set, get) => ({
   selectedRackId: null,
   cameraPreset: "Overview",
 
-  initialize: () => {
-    if (activeProvider) return;
-    activeProvider = new MockAssemblyDataProvider();
-    activeProvider.subscribe((snapshot: AssemblySnapshot) => {
-      set({
-        stations: snapshot.stations,
-        racks: snapshot.racks,
-        queueRackIds: snapshot.queueRackIds,
-        completedRackIds: snapshot.completedRackIds,
-        metrics: snapshot.metrics,
-        events: snapshot.events,
-        config: snapshot.config,
-      });
-    });
-  },
+  initialize: () => {if(!activeProvider)get().useProvider(new SimulationAssemblyProvider());},
 
   enterFactory: () => {
     set({ hasEnteredFactory: true, viewMode: "WALK" });

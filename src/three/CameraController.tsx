@@ -27,6 +27,7 @@ export function CameraController() {
       return;
     }
 
+    if (cameraPreset === "Kanban") {targetCamPos.current.set(0,5,-3);targetLookAt.current.set(0,4.2,-16.45);return;}
     if (cameraPreset === "Queue") {
       targetCamPos.current.set(-26, 8, 14);
       targetLookAt.current.set(-26, 2.2, 0);

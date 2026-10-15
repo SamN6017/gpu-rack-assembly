@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { KANBAN_POSITION } from "./factoryLayout";
 import { Text, Html } from "@react-three/drei";
 import { useAssemblyStore } from "@/store/assemblyStore";
 import { Kanban, Clock, Cpu, CheckCircle2, Play, AlertCircle } from "lucide-react";
@@ -14,7 +15,8 @@ export function PhysicalKanbanBoard() {
   const openModal = useAssemblyStore((s) => s.openModal);
 
   return (
-    <group position={[0, 4.2, -14.6]}>
+    <group position={KANBAN_POSITION}>
+      {[-4,4].map(x=><mesh key={x} position={[x,0,-0.25]}><boxGeometry args={[.4,4,.6]}/><meshStandardMaterial color="#475569"/></mesh>)}
       {/* Heavy Heavy Duty Industrial Steel Mount Frame */}
       <mesh castShadow receiveShadow>
         <boxGeometry args={[13.2, 6.2, 0.4]} />
@@ -47,7 +49,7 @@ export function PhysicalKanbanBoard() {
         anchorX="center"
         anchorY="middle"
       >
-        GPU RACK ASSEMBLY • LIVE PRODUCTION KANBAN
+        GPU RACK ASSEMBLY • SIMULATION KANBAN
       </Text>
 
       {/* Crisp 3D HTML Content Panel rendering live synchronized state */}
@@ -118,7 +120,7 @@ export function PhysicalKanbanBoard() {
               const rack = station.rackId ? racks[station.rackId] : null;
               let timerText = "WAITING";
               if (station.rackId && station.enteredAt) {
-                const rem = Math.max(0, (station.durationSeconds || 720) - (Date.now() - station.enteredAt) / 1000);
+                const rem = Math.max(0, (station.durationSeconds || 720) - ((useAssemblyStore.getState().virtualTime ?? Date.now()) - station.enteredAt) / 1000);
                 timerText = `${Math.floor(rem / 60)}m ${Math.floor(rem % 60)}s`;
               }
 
