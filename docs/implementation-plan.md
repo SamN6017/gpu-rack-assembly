@@ -96,21 +96,21 @@ Gate: full preview/validation/confirmation path works; source bytes and row prov
 
 ### Phase 3 — independent discrete-event engine
 
-- [ ] Create `src/simulation/core/{engine,eventQueue,eventTypes,clock,calendar,seededRandom,production,inventory,reservations,snapshots,metrics}.ts` and `src/simulation/core/types.ts`.
-- [ ] Create `src/server/services/simulationService.ts`, `src/server/repositories/simulationRepository.ts`, `src/server/workers/simulationWorker.ts`, `scripts/run-simulation-worker.ts`; migrations for jobs, snapshots and aggregates.
-- [ ] Create `src/app/api/simulation-runs/route.ts`, `src/app/api/simulation-runs/[id]/route.ts`, `src/app/api/simulation-runs/[id]/events/route.ts`, `src/app/api/simulation-runs/[id]/snapshots/route.ts` with run ownership/local-access boundaries and bounded pagination.
-- [ ] Create `src/services/simulationAssemblyProvider.ts`, `src/services/assemblySnapshotProjector.ts`, `src/services/providerFactory.ts`; extend `assemblyDataProvider.ts`/`types/assembly.ts` with mode, virtual time, version and capabilities.
-- [ ] Modify `assemblyStore.ts` for injection, subscription disposal and immutable snapshots; retain all camera/modal actions. Keep legacy `simulationEngine.ts` and mock provider during parity work; do not abruptly redirect existing UI.
-- [ ] Create `tests/unit/{eventQueue,calendar,production,inventoryConservation,determinism,simulationControls}.test.ts`, `tests/integration/simulationRunPersistence.test.ts`, `tests/performance/sixMonthRun.ts`.
+- [x] Create `src/simulation/core/{engine,eventQueue,eventTypes,clock,calendar,seededRandom,production,inventory,reservations,snapshots,metrics}.ts` and `src/simulation/core/types.ts`.
+- [x] Create `src/server/services/simulationService.ts`, `src/server/repositories/simulationRepository.ts`, `src/server/workers/simulationWorker.ts`, `scripts/run-simulation-worker.ts`; migrations for jobs, snapshots and aggregates.
+- [x] Create `src/app/api/simulation-runs/route.ts`, `src/app/api/simulation-runs/[id]/route.ts`, `src/app/api/simulation-runs/[id]/events/route.ts`, `src/app/api/simulation-runs/[id]/snapshots/route.ts` with run ownership/local-access boundaries and bounded pagination.
+- [x] Create `src/services/simulationAssemblyProvider.ts`, `src/services/assemblySnapshotProjector.ts`, `src/services/providerFactory.ts`; extend `assemblyDataProvider.ts`/`types/assembly.ts` with mode, virtual time, version and capabilities.
+- [x] Modify `assemblyStore.ts` for injection, subscription disposal and immutable snapshots; retain all camera/modal actions. Keep legacy `simulationEngine.ts` and mock provider during parity work; do not abruptly redirect existing UI.
+- [x] Create `tests/unit/{eventQueue,calendar,production,inventoryConservation,determinism,simulationControls}.test.ts`, `tests/integration/simulationRunPersistence.test.ts`, `tests/performance/sixMonthRun.ts`.
 
 Gate: 5 sequential stations, all requested events/controls, priorities, calendars, equipment faults, finite warehouse, material reservation and exactly-once consumption; blocked/resumed behavior; same inputs/seed/version yield identical event stream and totals; no React imports; six-month run in worker; restart-safe job/persistence; measured duration and memory with fixed scenario sizes. Record measured performance before setting a supported upper demand limit.
 
 ### Phase 4 — two-bin replenishment
 
-- [ ] Create `src/simulation/core/{kanban,replenishment,handlers,bins,coverage}.ts`; extend core event handling and metrics.
-- [ ] Create `src/app/(operations)/kanban/page.tsx`, `src/components/kanban/{MaterialBoard,KanbanFilters,ReplenishmentTimeline}.tsx`, `src/app/api/simulation-runs/[id]/kanban/route.ts`.
-- [ ] Add bin/rule configuration migrations as needed; extend run snapshots and projection with material balances, reserved/consumed stock, orders and shortages.
-- [ ] Create `tests/unit/{kanban,replenishment,handlerCapacity,coverage}.test.ts`, `tests/integration/kanbanQueries.test.ts`.
+- [x] Create `src/simulation/core/{kanban,replenishment,handlers,bins,coverage}.ts`; extend core event handling and metrics.
+- [x] Create `src/app/(operations)/kanban/page.tsx`, `src/components/kanban/{MaterialBoard,KanbanFilters,ReplenishmentTimeline}.tsx`, `src/app/api/simulation-runs/[id]/kanban/route.ts`.
+- [x] Add bin/rule configuration migrations as needed; extend run snapshots and projection with material balances, reserved/consumed stock, orders and shortages.
+- [x] Create `tests/unit/{kanban,replenishment,handlerCapacity,coverage}.test.ts`, `tests/integration/kanbanQueries.test.ts`.
 
 Gate: inventory position subtracts outstanding demand; no duplicate orders; finite warehouse/source reservations; distinct dispatch/transit/delivery balances; configurable bins/lead/safety/handlers; source shortages; station recovery; zero-demand coverage; filters by station, material, model, inventory and replenishment status; quantities match engine.
 
