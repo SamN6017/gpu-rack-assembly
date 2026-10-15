@@ -9,6 +9,7 @@ import type {
   SimEvent,
 } from "@/simulation/core/types";
 import type { RunAnalytics } from "@/analytics/runAnalytics";
+import { ReportDownloads } from "@/components/reports/ReportDownloads";
 export type RunList = {
   id: string;
   status: string;
@@ -651,26 +652,7 @@ export function RunWorkspace({ view }: { view: string }) {
               </div>
             </section>
           )}
-          {view === "reports" && (
-            <section className="panel">
-              <h2>Download simulation report</h2>
-              <p>
-                Includes production, inventory, Kanban, assumptions, source
-                references, configuration, seed and engine version.
-              </p>
-              <div className="actions">
-                {["csv", "xlsx", "pdf"].map((format) => (
-                  <a
-                    className="button"
-                    key={format}
-                    href={`/api/simulation-runs/${run.id}/reports?format=${format}`}
-                  >
-                    {format.toUpperCase()}
-                  </a>
-                ))}
-              </div>
-            </section>
-          )}
+          {view === "reports" && <ReportDownloads run={run} />}
           <section className="panel">
             <h2>Data quality and assumptions</h2>
             <ul style={{ paddingLeft: 20, listStyle: "disc" }}>

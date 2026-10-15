@@ -144,8 +144,8 @@ Gate: start/duration/model/demand/shifts/days/warehouse/point-of-use/lead/capaci
 
 ### Phase 8 — reports
 
-- [ ] Create `src/reports/{reportModel,recommendations,csvReport,excelReport,pdfReport,exportSafety}.ts`, `src/app/(operations)/reports/page.tsx`, `src/app/api/simulation-runs/[id]/reports/route.ts`, `src/components/reports/ReportDownloads.tsx`.
-- [ ] Add `tests/unit/{reportTotals,exportSafety,recommendations}.test.ts`, `tests/integration/reportExports.test.ts`, `tests/e2e/reportDownload.spec.ts` and representative rendered PDF verification artifacts.
+- [x] Create `src/reports/{reportModel,recommendations,csvReport,excelReport,pdfReport,exportSafety}.ts`, `src/app/(operations)/reports/page.tsx`, `src/app/api/simulation-runs/[id]/reports/route.ts`, `src/components/reports/ReportDownloads.tsx`.
+- [x] Add `tests/unit/{reportTotals,exportSafety,recommendations}.test.ts`, `tests/integration/reportExports.test.ts`, `tests/e2e/reportDownload.spec.ts` and representative rendered PDF verification artifacts.
 
 Gate: Excel/CSV/PDF share authoritative aggregates; executive, production, inventory and Kanban analysis; evidence-based recommendations; data quality/assumptions/limits; seed/version/configuration/source references; readable PDFs and typed Excel tables; monthly totals reconcile; opening/closing stock conservation; every report explicitly simulated. Export safety prevents formula injection. WIP consumption and unfinished downtime are explained.
 
