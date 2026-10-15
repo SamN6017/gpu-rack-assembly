@@ -1,0 +1,464 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DatasetKind {
+  ACTUAL
+  SYNTHETIC
+}
+
+enum EvidenceClass {
+  OBSERVED
+  DERIVED
+  ASSUMED
+  UNKNOWN
+}
+
+enum LocationType {
+  WAREHOUSE
+  KANBAN_STORAGE
+  POINT_OF_USE
+  IN_TRANSIT
+}
+
+enum InventoryEventType {
+  RECEIPT
+  TRANSFER
+  CONSUMPTION
+  ADJUSTMENT
+  RETURN
+}
+
+enum ReplenishmentStatus {
+  REQUESTED
+  PICKING
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum ProductionStatus {
+  PLANNED
+  QUEUED
+  RUNNING
+  BLOCKED
+  COMPLETED
+  CANCELLED
+}
+
+enum RunStatus {
+  QUEUED
+  RUNNING
+  PAUSED
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum SourceType {
+  EXCEL
+  CSV
+  MANUAL
+  SIMULATION
+  ERP
+  MES
+  WMS
+  IOT
+}
+
+enum ConnectionStatus {
+  DISCONNECTED
+  CONNECTING
+  CONNECTED
+  ERROR
+}
+
+enum ImportStatus {
+  PREVIEW
+  VALIDATED
+  IMPORTED
+  REJECTED
+  FAILED
+}
+
+enum ApprovalStatus {
+  PROPOSED
+  APPROVED
+  REJECTED
+}
+
+enum ReservationStatus {
+  ACTIVE
+  CONSUMED
+  RELEASED
+}
+
+model Material {
+  id               String                 @id @default(uuid()) @db.Uuid
+  createdAt        DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime               @updatedAt @db.Timestamptz(3)
+  catalogNamespace String
+  partNumber       String
+  description      String
+  category         String
+  unitOfMeasure    String
+  sourceReference  String
+  datasetKind      DatasetKind
+  boms             BillOfMaterial[]
+  balances         InventoryBalance[]
+  events           InventoryEvent[]
+  rules            KanbanRule[]
+  replenishments   ReplenishmentOrder[]
+  reservations     InventoryReservation[]
+  simulationEvents SimulationEvent[]
+
+  @@unique([catalogNamespace, partNumber])
+}
+
+model RackModel {
+  id          String            @id @default(uuid()) @db.Uuid
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+  modelCode   String            @unique
+  modelName   String
+  description String?
+  isActive    Boolean           @default(true)
+  datasetKind DatasetKind
+  boms        BillOfMaterial[]
+  orders      ProductionOrder[]
+}
+
+model Workstation {
+  id               String            @id @default(uuid()) @db.Uuid
+  createdAt        DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime          @updatedAt @db.Timestamptz(3)
+  stationCode      String            @unique
+  name             String
+  sequence         Int               @unique
+  cycleTimeSeconds Int               @default(720)
+  isActive         Boolean           @default(true)
+  boms             BillOfMaterial[]
+  simulationEvents SimulationEvent[]
+}
+
+model BillOfMaterial {
+  id              String      @id @default(uuid()) @db.Uuid
+  createdAt       DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime    @updatedAt @db.Timestamptz(3)
+  rackModelId     String      @db.Uuid
+  materialId      String      @db.Uuid
+  workstationId   String      @db.Uuid
+  quantityPerRack Decimal     @db.Decimal(20, 6)
+  effectiveFrom   DateTime    @db.Timestamptz(3)
+  effectiveTo     DateTime?   @db.Timestamptz(3)
+  sourceReference String
+  rackModel       RackModel   @relation(fields: [rackModelId], references: [id], onDelete: Restrict)
+  material        Material    @relation(fields: [materialId], references: [id], onDelete: Restrict)
+  workstation     Workstation @relation(fields: [workstationId], references: [id], onDelete: Restrict)
+
+  @@index([rackModelId, workstationId])
+  @@index([materialId])
+  @@index([workstationId])
+}
+
+model InventoryLocation {
+  id               String                 @id @default(uuid()) @db.Uuid
+  createdAt        DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime               @updatedAt @db.Timestamptz(3)
+  code             String                 @unique
+  name             String
+  locationType     LocationType
+  parentLocationId String?                @db.Uuid
+  parent           InventoryLocation?     @relation("Hierarchy", fields: [parentLocationId], references: [id], onDelete: Restrict)
+  children         InventoryLocation[]    @relation("Hierarchy")
+  balances         InventoryBalance[]
+  eventsOut        InventoryEvent[]       @relation("EventSource")
+  eventsIn         InventoryEvent[]       @relation("EventDestination")
+  rulesOut         KanbanRule[]           @relation("RuleSource")
+  rulesIn          KanbanRule[]           @relation("RuleDestination")
+  ordersOut        ReplenishmentOrder[]   @relation("OrderSource")
+  ordersIn         ReplenishmentOrder[]   @relation("OrderDestination")
+  reservations     InventoryReservation[]
+
+  @@index([parentLocationId])
+}
+
+model InventoryBalance {
+  id               String            @id @default(uuid()) @db.Uuid
+  createdAt        DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime          @updatedAt @db.Timestamptz(3)
+  materialId       String            @db.Uuid
+  locationId       String            @db.Uuid
+  quantityOnHand   Decimal           @default(0) @db.Decimal(20, 6)
+  quantityReserved Decimal           @default(0) @db.Decimal(20, 6)
+  material         Material          @relation(fields: [materialId], references: [id], onDelete: Restrict)
+  location         InventoryLocation @relation(fields: [locationId], references: [id], onDelete: Restrict)
+
+  @@unique([materialId, locationId])
+  @@index([locationId])
+}
+
+model InventoryEvent {
+  id                    String                @id @default(uuid()) @db.Uuid
+  createdAt             DateTime              @default(now()) @db.Timestamptz(3)
+  materialId            String                @db.Uuid
+  sourceLocationId      String?               @db.Uuid
+  destinationLocationId String?               @db.Uuid
+  quantity              Decimal               @db.Decimal(20, 6)
+  eventType             InventoryEventType
+  occurredAt            DateTime              @db.Timestamptz(3)
+  sourceSystem          String
+  externalEventId       String
+  correlationId         String
+  sourceReference       String
+  payloadHash           String
+  reason                String?
+  reservationId         String?               @unique @db.Uuid
+  material              Material              @relation(fields: [materialId], references: [id], onDelete: Restrict)
+  source                InventoryLocation?    @relation("EventSource", fields: [sourceLocationId], references: [id], onDelete: Restrict)
+  destination           InventoryLocation?    @relation("EventDestination", fields: [destinationLocationId], references: [id], onDelete: Restrict)
+  reservation           InventoryReservation? @relation(fields: [reservationId], references: [id], onDelete: Restrict)
+
+  @@unique([sourceSystem, externalEventId])
+  @@index([materialId, occurredAt])
+  @@index([sourceLocationId, occurredAt])
+  @@index([destinationLocationId, occurredAt])
+  @@index([correlationId])
+}
+
+model KanbanRule {
+  id                       String               @id @default(uuid()) @db.Uuid
+  createdAt                DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt                DateTime             @updatedAt @db.Timestamptz(3)
+  materialId               String               @db.Uuid
+  sourceLocationId         String               @db.Uuid
+  destinationLocationId    String               @db.Uuid
+  numberOfBins             Int                  @default(2)
+  unitsPerBin              Decimal              @db.Decimal(20, 6)
+  reorderPoint             Decimal              @db.Decimal(20, 6)
+  targetStock              Decimal              @db.Decimal(20, 6)
+  replenishmentLeadMinutes Int
+  safetyStock              Decimal              @db.Decimal(20, 6)
+  enabled                  Boolean              @default(true)
+  material                 Material             @relation(fields: [materialId], references: [id], onDelete: Restrict)
+  source                   InventoryLocation    @relation("RuleSource", fields: [sourceLocationId], references: [id], onDelete: Restrict)
+  destination              InventoryLocation    @relation("RuleDestination", fields: [destinationLocationId], references: [id], onDelete: Restrict)
+  orders                   ReplenishmentOrder[]
+
+  @@unique([materialId, sourceLocationId, destinationLocationId])
+  @@index([sourceLocationId])
+  @@index([destinationLocationId])
+}
+
+model ReplenishmentOrder {
+  id                    String              @id @default(uuid()) @db.Uuid
+  createdAt             DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime            @updatedAt @db.Timestamptz(3)
+  materialId            String              @db.Uuid
+  sourceLocationId      String              @db.Uuid
+  destinationLocationId String              @db.Uuid
+  ruleId                String?             @db.Uuid
+  idempotencyKey        String              @unique
+  requestedQuantity     Decimal             @db.Decimal(20, 6)
+  deliveredQuantity     Decimal             @default(0) @db.Decimal(20, 6)
+  status                ReplenishmentStatus @default(REQUESTED)
+  requestedAt           DateTime            @db.Timestamptz(3)
+  dispatchedAt          DateTime?           @db.Timestamptz(3)
+  deliveredAt           DateTime?           @db.Timestamptz(3)
+  material              Material            @relation(fields: [materialId], references: [id], onDelete: Restrict)
+  source                InventoryLocation   @relation("OrderSource", fields: [sourceLocationId], references: [id], onDelete: Restrict)
+  destination           InventoryLocation   @relation("OrderDestination", fields: [destinationLocationId], references: [id], onDelete: Restrict)
+  rule                  KanbanRule?         @relation(fields: [ruleId], references: [id], onDelete: Restrict)
+
+  @@index([status, requestedAt])
+  @@index([materialId, destinationLocationId])
+  @@index([sourceLocationId])
+  @@index([destinationLocationId])
+  @@index([ruleId])
+}
+
+model ProductionOrder {
+  id               String                 @id @default(uuid()) @db.Uuid
+  createdAt        DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime               @updatedAt @db.Timestamptz(3)
+  rackModelId      String                 @db.Uuid
+  rackSerialNumber String                 @unique
+  priority         Int                    @default(0)
+  status           ProductionStatus       @default(PLANNED)
+  scheduledStart   DateTime               @db.Timestamptz(3)
+  actualStart      DateTime?              @db.Timestamptz(3)
+  completedAt      DateTime?              @db.Timestamptz(3)
+  rackModel        RackModel              @relation(fields: [rackModelId], references: [id], onDelete: Restrict)
+  reservations     InventoryReservation[]
+
+  @@index([rackModelId])
+  @@index([status, priority, scheduledStart])
+}
+
+model SimulationScenario {
+  id                     String          @id @default(uuid()) @db.Uuid
+  createdAt              DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime        @updatedAt @db.Timestamptz(3)
+  name                   String
+  description            String?
+  durationDays           Int
+  startDate              DateTime        @db.Timestamptz(3)
+  durationMonths         Int?
+  calendarTimezone       String
+  productionScheduleJson Json
+  initialInventoryJson   Json
+  kanbanOverridesJson    Json
+  simulationSeed         Int
+  schemaVersion          String
+  datasetKind            DatasetKind
+  runs                   SimulationRun[]
+}
+
+model SimulationRun {
+  id                   String             @id @default(uuid()) @db.Uuid
+  createdAt            DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime           @updatedAt @db.Timestamptz(3)
+  scenarioId           String             @db.Uuid
+  status               RunStatus          @default(QUEUED)
+  startedAt            DateTime?          @db.Timestamptz(3)
+  finishedAt           DateTime?          @db.Timestamptz(3)
+  simulatedStart       DateTime           @db.Timestamptz(3)
+  simulatedEnd         DateTime           @db.Timestamptz(3)
+  inputSnapshotJson    Json
+  configurationVersion String
+  engineVersion        String
+  simulationSeed       Int
+  inputHash            String
+  summaryJson          Json?
+  scenario             SimulationScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict)
+  events               SimulationEvent[]
+
+  @@index([scenarioId, createdAt])
+  @@index([status])
+}
+
+model SimulationEvent {
+  id               String        @id @default(uuid()) @db.Uuid
+  createdAt        DateTime      @default(now()) @db.Timestamptz(3)
+  runId            String        @db.Uuid
+  sequenceNumber   BigInt
+  virtualTimestamp DateTime      @db.Timestamptz(3)
+  eventType        String
+  materialId       String?       @db.Uuid
+  rackId           String?
+  workstationId    String?       @db.Uuid
+  payloadJson      Json
+  run              SimulationRun @relation(fields: [runId], references: [id], onDelete: Restrict)
+  material         Material?     @relation(fields: [materialId], references: [id], onDelete: Restrict)
+  workstation      Workstation?  @relation(fields: [workstationId], references: [id], onDelete: Restrict)
+
+  @@unique([runId, sequenceNumber])
+  @@index([runId, virtualTimestamp])
+  @@index([virtualTimestamp])
+  @@index([eventType])
+  @@index([runId, eventType, virtualTimestamp])
+  @@index([materialId])
+  @@index([workstationId])
+}
+
+model DataSource {
+  id                String           @id @default(uuid()) @db.Uuid
+  createdAt         DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime         @updatedAt @db.Timestamptz(3)
+  name              String
+  sourceType        SourceType
+  connectionStatus  ConnectionStatus @default(DISCONNECTED)
+  configurationJson Json
+  lastSyncAt        DateTime?        @db.Timestamptz(3)
+  imports           ImportBatch[]
+  provenance        DataProvenance[]
+}
+
+model ImportBatch {
+  id                   String           @id @default(uuid()) @db.Uuid
+  createdAt            DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime         @updatedAt @db.Timestamptz(3)
+  sourceId             String           @db.Uuid
+  filename             String
+  checksum             String
+  importedAt           DateTime?        @db.Timestamptz(3)
+  status               ImportStatus     @default(PREVIEW)
+  rowCount             Int
+  acceptedRows         Int              @default(0)
+  rejectedRows         Int              @default(0)
+  validationReportJson Json
+  mappingVersion       String
+  schemaVersion        String
+  approvedBy           String?
+  approvedAt           DateTime?        @db.Timestamptz(3)
+  source               DataSource       @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  provenance           DataProvenance[]
+
+  @@index([sourceId, checksum, mappingVersion])
+}
+
+model DataProvenance {
+  id              String        @id @default(uuid()) @db.Uuid
+  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
+  entityType      String
+  entityId        String
+  fieldName       String
+  classification  EvidenceClass
+  datasetKind     DatasetKind
+  sourceReference String
+  rawValue        Json
+  sourceId        String?       @db.Uuid
+  importBatchId   String?       @db.Uuid
+  source          DataSource?   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  importBatch     ImportBatch?  @relation(fields: [importBatchId], references: [id], onDelete: Restrict)
+
+  @@index([entityType, entityId])
+  @@index([sourceId])
+  @@index([importBatchId])
+}
+
+model DataAssumption {
+  id              String         @id @default(uuid()) @db.Uuid
+  createdAt       DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
+  parameter       String
+  valueJson       Json
+  unit            String
+  rationale       String
+  sourceReference String
+  datasetKind     DatasetKind
+  status          ApprovalStatus @default(PROPOSED)
+  version         Int            @default(1)
+  contentHash     String
+  approvedBy      String?
+  approvedAt      DateTime?      @db.Timestamptz(3)
+
+  @@unique([parameter, version])
+}
+
+model InventoryReservation {
+  id                String            @id @default(uuid()) @db.Uuid
+  createdAt         DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime          @updatedAt @db.Timestamptz(3)
+  materialId        String            @db.Uuid
+  locationId        String            @db.Uuid
+  productionOrderId String            @db.Uuid
+  operationKey      String
+  quantity          Decimal           @db.Decimal(20, 6)
+  status            ReservationStatus @default(ACTIVE)
+  idempotencyKey    String            @unique
+  payloadHash       String
+  material          Material          @relation(fields: [materialId], references: [id], onDelete: Restrict)
+  location          InventoryLocation @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  productionOrder   ProductionOrder   @relation(fields: [productionOrderId], references: [id], onDelete: Restrict)
+  event             InventoryEvent?
+
+  @@unique([productionOrderId, operationKey, materialId])
+  @@index([materialId, locationId, status])
+  @@index([locationId])
+}

@@ -1,6 +1,6 @@
 # Target manufacturing architecture — proposal
 
-Status: design only, awaiting approval after Phase 0. Read with [current-system.md](current-system.md) and [implementation-plan.md](../implementation-plan.md).
+Status: target design; the Phase 1 foundation is implemented. Later engine, UI and live-integration sections remain proposals. See [Phase 1 completion](../phase-1-completion.md) for resolved runtime choices and deviations. Read with [current-system.md](current-system.md) and [implementation-plan.md](../implementation-plan.md).
 
 ## Boundaries
 

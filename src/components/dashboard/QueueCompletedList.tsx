@@ -90,7 +90,7 @@ export function QueueCompletedList() {
         <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
           {queueRackIds.length === 0 ? (
             <div className="text-[11px] text-slate-500 italic py-4 text-center">
-              Queue is empty. Click "+ Add" to enqueue a GPU rack.
+              Queue is empty. Click &quot;+ Add&quot; to enqueue a GPU rack.
             </div>
           ) : (
             queueRackIds.map((id, index) => {

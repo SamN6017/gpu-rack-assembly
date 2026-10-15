@@ -1,6 +1,6 @@
 # Manufacturing digital twin — phased implementation checklist
 
-Status: Phase 0 documentation delivered; implementation awaits the user's explicit approval as required by the supplied master plan. No Phase 1 code or dependencies have been added. Checkboxes describe actual completion, not intent.
+Status: Phase 1 was authorized by the user and implemented. See [Phase 1 completion record](phase-1-completion.md) for exact changes, verification and limitations. The user authorized completion of Phases 2–10 on 2026-10-15; those phases are now in progress. Checkboxes describe actual completion, not intent.
 
 Architecture: [current system](architecture/current-system.md), [target system and proposed database schema](architecture/target-system.md).
 
@@ -16,7 +16,7 @@ Architecture: [current system](architecture/current-system.md), [target system a
 - [x] Inspect supplied JSON manifest and representative records; distinguish synthetic fixtures and station-name conflicts.
 - [x] Confirm basic 3D factory operation after delayed browser hydration: rendered scene, camera mode selection, Kanban, demo transfers/arrivals, reset and pause control.
 - [ ] Complete full pointer-lock/WASD/collision/proximity regression coverage in Phase 5.
-- [ ] User approves Phase 1.
+- [x] User approved Phase 1.
 
 Created: `docs/architecture/current-system.md`, `docs/architecture/target-system.md`, `docs/implementation-plan.md`. Modified: `README.md` to link the audit. Application source, package manifests and lockfile remain unchanged. Commit Phase 0 separately; do not push or merge as part of the audit.
 
@@ -189,4 +189,4 @@ Gate: all named behaviors have tests/evidence; no skipped requirement is represe
 
 For every implemented phase, record: behavior delivered; exact created/modified paths; commands and exit results; build result; schema/migration effects; assumptions and known limits; manual verification steps; commit ID. Fix failures before the next implementation phase. Phase 0 is documentation with known baseline verification gaps, not permission to skip future acceptance checks.
 
-The next authorization is Phase 1 only unless the user explicitly expands it. The stop here follows the supplied master plan's final instruction: “Then stop and wait for approval.”
+Phase 1 was authorized and delivered. Continue with Phase 2 only after the user extends the implementation scope.

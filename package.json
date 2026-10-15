@@ -6,30 +6,51 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint src prisma scripts tests --ext .ts,.tsx,.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.mts",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "NODE_OPTIONS=--conditions=react-server tsx prisma/seed.ts",
+    "format:check": "prettier --check \"src/server/**/*.ts\" \"src/domain/**/*.ts\" \"src/app/api/**/*.ts\" \"tests/**/*.ts\" \"prisma/*.ts\" \"*.mts\""
   },
   "dependencies": {
-    "@react-three/drei": "^9.114.0",
-    "@react-three/fiber": "^8.17.10",
+    "@prisma/client": "6.19.3",
+    "@react-three/drei": "10.7.9",
+    "@react-three/fiber": "9.8.2",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
+    "dotenv": "16.6.1",
     "lucide-react": "^0.453.0",
-    "next": "14.2.15",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "next": "15.5.28",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1",
     "tailwind-merge": "^2.5.4",
     "three": "^0.169.0",
+    "zod": "3.25.76",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20.16.11",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "^19.0.0",
     "@types/three": "^0.169.0",
     "autoprefixer": "^10.4.20",
+    "eslint": "8.57.1",
+    "eslint-config-next": "15.5.28",
     "postcss": "^8.4.47",
+    "prisma": "6.19.3",
     "tailwindcss": "^3.4.13",
-    "typescript": "^5.4.5"
+    "tsx": "4.20.6",
+    "typescript": "^5.4.5",
+    "vitest": "4.1.11",
+    "prettier": "3.6.2"
+  },
+  "engines": {
+    "node": ">=22.12.0 <23"
   }
 }
