@@ -116,12 +116,12 @@ Gate: inventory position subtracts outstanding demand; no duplicate orders; fini
 
 ### Phase 5 — 3D material flow and playback
 
-- [ ] Create `src/three/factoryLayout.ts`, `src/three/materials/{WarehouseZone,MaterialStaging,KanbanBins,MaterialPallet,MaterialCart,DeliveryPath,MaterialConsumption}.tsx`, `src/services/eventPlayback.ts`.
-- [ ] Extend `FactoryScene.tsx`, `Station3D.tsx`, `Rack3D.tsx`, `PhysicalKanbanBoard.tsx` for authoritative snapshots and visual material flow. Preserve the existing floor and station geometry; annotate material representations as illustrative.
-- [ ] Modify `FirstPersonController.tsx`, `CameraController.tsx`, `simulationEngine.ts` imports to share extracted layout coordinates; extend collision/proximity zones and implement actual Kanban preset targeting. Keep legacy coordinate export as a compatibility re-export.
-- [ ] Modify `PhysicalKanbanBoard.tsx` mount geometry to meet the north wall with brackets, with dimensions reviewed in scene; keep E/click open behavior. Update collision bounds, proximity and camera focus together.
-- [ ] Modify timer displays in `Station3D`, `PhysicalKanbanBoard`, `StationCard`, `KanbanModal`, `StationInspectModal`, `RackDetailModal` to projected time. Extend `FactoryHUD`, `SimulationControls`, and `AddRackModal` for capabilities, playback, real priorities and canonical model IDs.
-- [ ] Add `tests/unit/playbackProjection.test.ts` and `tests/e2e/factoryInteractions.spec.ts`; verify walk/orbit/queue/inspect/board, jump/seek, demo movements and snapshots while animations are disabled. Never mutate inventory from animation callbacks.
+- [x] Create `src/three/factoryLayout.ts`, `src/three/materials/{WarehouseZone,MaterialStaging,KanbanBins,MaterialPallet,MaterialCart,DeliveryPath,MaterialConsumption}.tsx`, `src/services/eventPlayback.ts`.
+- [x] Extend `FactoryScene.tsx`, `Station3D.tsx`, `Rack3D.tsx`, `PhysicalKanbanBoard.tsx` for authoritative snapshots and visual material flow. Preserve the existing floor and station geometry; annotate material representations as illustrative.
+- [x] Modify `FirstPersonController.tsx`, `CameraController.tsx`, `simulationEngine.ts` imports to share extracted layout coordinates; extend collision/proximity zones and implement actual Kanban preset targeting. Keep legacy coordinate export as a compatibility re-export.
+- [x] Modify `PhysicalKanbanBoard.tsx` mount geometry to meet the north wall with brackets, with dimensions reviewed in scene; keep E/click open behavior. Update collision bounds, proximity and camera focus together.
+- [x] Modify timer displays in `Station3D`, `PhysicalKanbanBoard`, `StationCard`, `KanbanModal`, `StationInspectModal`, `RackDetailModal` to projected time. Extend `FactoryHUD`, `SimulationControls`, and `AddRackModal` for capabilities, playback, real priorities and canonical model IDs.
+- [x] Add `tests/unit/playbackProjection.test.ts` and `tests/e2e/factoryInteractions.spec.ts`; verify walk/orbit/queue/inspect/board, jump/seek, demo movements and snapshots while animations are disabled. Never mutate inventory from animation callbacks.
 
 Gate: complete factory regression checklist, wall board visually attached, bounded visible rack history, responsive accelerated playback and correct event-driven material animation. Only then switch the default simulation provider; legacy demo can remain selectable without mixing data.
 

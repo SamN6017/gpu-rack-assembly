@@ -6,7 +6,7 @@ import { PointerLockControls } from "@react-three/drei";
 import type { PointerLockControls as PointerLockControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { useAssemblyStore } from "@/store/assemblyStore";
-import { STATION_COORDINATES } from "@/simulation/simulationEngine";
+import { STATION_COORDINATES } from "@/three/factoryLayout";
 
 // Collision AABBs [minX, maxX, minZ, maxZ]
 const COLLIDERS = [

@@ -6,7 +6,7 @@ import { OrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { useAssemblyStore } from "@/store/assemblyStore";
-import { STATION_COORDINATES } from "@/simulation/simulationEngine";
+import { STATION_COORDINATES, KANBAN_POSITION } from "@/three/factoryLayout";
 
 export function CameraController() {
   const controlsRef = useRef<OrbitControlsImpl>(null);
