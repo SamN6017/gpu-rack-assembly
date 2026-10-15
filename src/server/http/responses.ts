@@ -123,10 +123,11 @@ export async function handle(
         },
         409,
       );
+    console.error("API Error in handle():", error);
     return json(
       {
         error: "INTERNAL_ERROR",
-        message: "The request could not be completed",
+        message: (error as Error).message || "The request could not be completed",
       },
       500,
     );
