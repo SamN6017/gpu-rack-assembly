@@ -160,11 +160,11 @@ Gate: normalized contract, duplicate/delayed/out-of-order support, raw reference
 
 ### Phase 10 — quality and performance closure
 
-- [ ] Complete unit, PostgreSQL integration and browser suites introduced in earlier phases; configure `.github/workflows/ci.yml` only after local commands are stable.
-- [ ] Add `tests/performance/{largeEventHistory,concurrentRuns,playback}.ts`, `docs/quality/{acceptance,performance,security}.md`.
-- [ ] Measure six-month runtime/memory, persisted event sizes, aggregation/pagination latency and 3D frame responsiveness; establish reproducible budgets and document supported demand/history limits.
-- [ ] Test job interruption/retry, idempotent event persistence, DB transaction races, report consistency, upload limits, export safety, credential isolation and authenticated access before actual integration.
-- [ ] Run full factory interaction acceptance and visual inspection; keep meaningful events/checkpoints rather than frames; document limitations and recovery commands.
+- [x] Complete unit, PostgreSQL integration and browser suites introduced in earlier phases; configure `.github/workflows/ci.yml` only after local commands are stable.
+- [x] Add `tests/performance/{largeEventHistory,concurrentRuns,playback}.ts`, `docs/quality/{acceptance,performance,security}.md`.
+- [x] Measure six-month runtime/memory, persisted event sizes, aggregation/pagination latency and 3D frame responsiveness; establish reproducible budgets and document supported demand/history limits.
+- [x] Test job interruption/retry, idempotent event persistence, DB transaction races, report consistency, upload limits, export safety, credential isolation and authenticated access before actual integration.
+- [x] Run full factory interaction acceptance and visual inspection; keep meaningful events/checkpoints rather than frames; document limitations and recovery commands.
 
 Gate: all named behaviors have tests/evidence; no skipped requirement is represented as done; clean setup reproduces migrations/seed/tests/build; report and dashboard totals reconcile; every phase has a separate commit and handoff record.
 

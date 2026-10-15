@@ -1,0 +1,67 @@
+name: Manufacturing Digital Twin CI
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Typecheck, Unit, Performance & Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+          POSTGRES_DB: rack_twin_test
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      TEST_DATABASE_URL: postgresql://postgres:postgrespassword@localhost:55432/rack_twin_test
+      DATABASE_URL: postgresql://postgres:postgrespassword@localhost:55432/rack_twin_test
+      MANUFACTURING_API_TOKEN: integration-test-token-at-least-32-characters
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npm run db:generate
+
+      - name: TypeScript Static Typecheck
+        run: npm run typecheck
+
+      - name: Execute Unit Test Suite
+        run: npm test
+
+      - name: Execute Performance Benchmarks
+        run: npm run test:performance
+
+      - name: Deploy Test Database Migrations
+        run: npx prisma migrate deploy
+
+      - name: Execute Integration Test Suite
+        run: npm run test:integration
+
+      - name: Production Build Check
+        run: npm run build
