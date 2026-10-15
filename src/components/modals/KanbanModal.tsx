@@ -42,7 +42,7 @@ export function KanbanModal() {
   if (activeModal !== "KANBAN") return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-md select-none font-mono">
+    <div className="fixed inset-0 z-[100] isolate flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-md select-none font-mono">
       <div className="bg-[#0b101d] border border-sky-500/50 rounded-2xl w-full max-w-6xl h-[88vh] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Top Header */}
         <div className="bg-[#0f172a] border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">

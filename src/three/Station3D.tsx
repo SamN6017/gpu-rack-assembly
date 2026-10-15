@@ -24,6 +24,7 @@ interface Station3DProps {
 }
 
 export function Station3D({ station, rack }: Station3DProps) {
+  const activeModal = useAssemblyStore((s) => s.activeModal);
   const selectedStationId = useAssemblyStore((s) => s.selectedStationId);
   const selectStation = useAssemblyStore((s) => s.selectStation);
   const selectRack = useAssemblyStore((s) => s.selectRack);
@@ -241,102 +242,106 @@ export function Station3D({ station, rack }: Station3DProps) {
         />
       </group>
 
-      {/* Floating Non-overlapping Overhead Status Chip */}
-      <Html
-        position={[0, 7.2, 0]}
-        center
-        distanceFactor={28}
-        className="pointer-events-auto select-none"
-      >
-        <div
-          className={`flex flex-col items-center transition-all duration-200 ${
-            hovered || isSelected ? "scale-105 z-30" : "scale-95 opacity-90"
-          }`}
+      {/* Contextual Overhead Status Chip (Only visible on hover, selection, or blocked state; hidden when modal is open) */}
+      {activeModal === "NONE" && (hovered || isSelected || station.status === "BLOCKED") && (
+        <Html
+          position={[0, 7.2, 0]}
+          center
+          distanceFactor={28}
+          occlude
+          zIndexRange={[10, 0]}
+          className="pointer-events-auto select-none"
         >
-          {/* Compact Status Pill */}
           <div
-            onClick={(e) => {
-              e.stopPropagation();
-              selectStation(station.id);
-            }}
-            className={`flex items-center space-x-2 px-3 py-1 rounded-full border shadow-xl backdrop-blur-md cursor-pointer font-mono text-xs transition ${
-              isSelected
-                ? "bg-slate-900 border-sky-400 ring-2 ring-sky-400/50 text-white"
-                : station.status === "BLOCKED"
-                ? "bg-rose-950/90 border-rose-500/80 text-rose-300 animate-pulse"
-                : station.status === "RUNNING"
-                ? "bg-slate-950/90 border-sky-500/50 text-sky-300"
-                : station.status === "COMPLETE"
-                ? "bg-emerald-950/90 border-emerald-500/60 text-emerald-300"
-                : "bg-slate-950/80 border-slate-700 text-slate-400"
+            className={`flex flex-col items-center transition-all duration-200 ${
+              hovered || isSelected ? "scale-105 z-30" : "scale-95 opacity-90"
             }`}
           >
-            <span className="font-bold">STN {station.number}</span>
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeColor }} />
-            <span className="text-[11px] font-medium">
-              {station.rackId ? `${station.rackId}` : "EMPTY"}
-            </span>
-            {station.rackId && (
-              <span className="text-[10px] text-slate-400 border-l border-slate-700 pl-1.5 font-bold">
-                {clockTime}
-              </span>
-            )}
-          </div>
-
-          {/* Interactive Action Menu (Visible on Hover or Selection) */}
-          {(hovered || isSelected) && (
+            {/* Compact Status Pill */}
             <div
-              onClick={(e) => e.stopPropagation()}
-              className="mt-1.5 bg-slate-950/95 border border-slate-700 p-2 rounded-xl shadow-2xl backdrop-blur-md flex items-center space-x-1.5 text-[11px] font-mono animate-in fade-in zoom-in-95 duration-150"
+              onClick={(e) => {
+                e.stopPropagation();
+                selectStation(station.id);
+              }}
+              className={`flex items-center space-x-2 px-3 py-1 rounded-full border shadow-xl backdrop-blur-md cursor-pointer font-mono text-xs transition ${
+                isSelected
+                  ? "bg-slate-900 border-sky-400 ring-2 ring-sky-400/50 text-white"
+                  : station.status === "BLOCKED"
+                  ? "bg-rose-950/90 border-rose-500/80 text-rose-300 animate-pulse"
+                  : station.status === "RUNNING"
+                  ? "bg-slate-950/90 border-sky-500/50 text-sky-300"
+                  : station.status === "COMPLETE"
+                  ? "bg-emerald-950/90 border-emerald-500/60 text-emerald-300"
+                  : "bg-slate-950/80 border-slate-700 text-slate-400"
+              }`}
             >
-              {station.rackId ? (
-                <>
-                  <button
-                    onClick={() => advanceStation(station.id)}
-                    className="flex items-center space-x-1 px-2 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-semibold shadow transition"
-                    title="Instantly complete station process and move rack forward"
-                  >
-                    <FastForward className="w-3 h-3" />
-                    <span>Advance</span>
-                  </button>
-                  <button
-                    onClick={() => toggleStationBlock(station.id)}
-                    className={`flex items-center space-x-1 px-2 py-1 rounded font-semibold transition ${
-                      station.status === "BLOCKED"
-                        ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                        : "bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-300"
-                    }`}
-                    title="Simulate maintenance block / unblock"
-                  >
-                    {station.status === "BLOCKED" ? (
-                      <>
-                        <ShieldCheck className="w-3 h-3" />
-                        <span>Unblock</span>
-                      </>
-                    ) : (
-                      <>
-                        <ShieldAlert className="w-3 h-3" />
-                        <span>Block</span>
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => selectRack(station.rackId)}
-                    className="flex items-center space-x-1 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
-                  >
-                    <Cpu className="w-3 h-3 text-sky-400" />
-                    <span>Inspect</span>
-                  </button>
-                </>
-              ) : (
-                <span className="text-[10px] text-slate-400 px-2 py-0.5 italic">
-                  Awaiting rack from upstream
+              <span className="font-bold">STN {station.number}</span>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeColor }} />
+              <span className="text-[11px] font-medium">
+                {station.rackId ? `${station.rackId}` : "EMPTY"}
+              </span>
+              {station.rackId && (
+                <span className="text-[10px] text-slate-400 border-l border-slate-700 pl-1.5 font-bold">
+                  {clockTime}
                 </span>
               )}
             </div>
-          )}
-        </div>
-      </Html>
+
+            {/* Interactive Action Menu (Visible on Hover or Selection) */}
+            {(hovered || isSelected) && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="mt-1.5 bg-slate-950/95 border border-slate-700 p-2 rounded-xl shadow-2xl backdrop-blur-md flex items-center space-x-1.5 text-[11px] font-mono animate-in fade-in zoom-in-95 duration-150"
+              >
+                {station.rackId ? (
+                  <>
+                    <button
+                      onClick={() => advanceStation(station.id)}
+                      className="flex items-center space-x-1 px-2 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-semibold shadow transition"
+                      title="Instantly complete station process and move rack forward"
+                    >
+                      <FastForward className="w-3 h-3" />
+                      <span>Advance</span>
+                    </button>
+                    <button
+                      onClick={() => toggleStationBlock(station.id)}
+                      className={`flex items-center space-x-1 px-2 py-1 rounded font-semibold transition ${
+                        station.status === "BLOCKED"
+                          ? "bg-emerald-600 hover:bg-emerald-500 text-white"
+                          : "bg-rose-950/80 hover:bg-rose-900 border border-rose-700 text-rose-300"
+                      }`}
+                      title="Simulate maintenance block / unblock"
+                    >
+                      {station.status === "BLOCKED" ? (
+                        <>
+                          <ShieldCheck className="w-3 h-3" />
+                          <span>Unblock</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShieldAlert className="w-3 h-3" />
+                          <span>Block</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => selectRack(station.rackId)}
+                      className="flex items-center space-x-1 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+                    >
+                      <Cpu className="w-3 h-3 text-sky-400" />
+                      <span>Inspect</span>
+                    </button>
+                  </>
+                ) : (
+                  <span className="text-[10px] text-slate-400 px-2 py-0.5 italic">
+                    Awaiting rack from upstream
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </Html>
+      )}
     </group>
   );
 }

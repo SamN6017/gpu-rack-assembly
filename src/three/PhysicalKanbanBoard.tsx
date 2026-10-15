@@ -13,6 +13,7 @@ export function PhysicalKanbanBoard() {
   const completedRackIds = useAssemblyStore((s) => s.completedRackIds);
   const metrics = useAssemblyStore((s) => s.metrics);
   const openModal = useAssemblyStore((s) => s.openModal);
+  const activeModal = useAssemblyStore((s) => s.activeModal);
 
   return (
     <group position={KANBAN_POSITION}>
@@ -52,14 +53,16 @@ export function PhysicalKanbanBoard() {
         GPU RACK ASSEMBLY • SIMULATION KANBAN
       </Text>
 
-      {/* Crisp 3D HTML Content Panel rendering live synchronized state */}
-      <Html
-        position={[0, 0, 0.26]}
-        transform
-        distanceFactor={10}
-        occlude={false}
-        className="pointer-events-auto select-none"
-      >
+      {/* Crisp 3D HTML Content Panel rendering live synchronized state (hidden when modal is open) */}
+      {activeModal === "NONE" && (
+        <Html
+          position={[0, 0, 0.26]}
+          transform
+          distanceFactor={10}
+          occlude
+          zIndexRange={[5, 0]}
+          className="pointer-events-auto select-none"
+        >
         <div
           onClick={() => openModal("KANBAN")}
           className="w-[1000px] h-[450px] p-6 text-white font-mono flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-sky-500/50 rounded-xl transition duration-200"
@@ -204,6 +207,7 @@ export function PhysicalKanbanBoard() {
           </div>
         </div>
       </Html>
+      )}
     </group>
   );
 }

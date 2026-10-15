@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import React from "react";
 import * as THREE from "three";
 
 interface AssemblyPathProps {
@@ -14,16 +13,6 @@ interface AssemblyPathProps {
 export function AssemblyPath({ startX, endX, y = 0.05, z = 0 }: AssemblyPathProps) {
   const length = Math.abs(endX - startX);
   const centerX = (startX + endX) / 2;
-  const rollersRef = useRef<THREE.Group>(null);
-
-  // Animated conveyor rollers
-  useFrame((_, delta) => {
-    if (rollersRef.current) {
-      rollersRef.current.children.forEach((child) => {
-        child.rotation.z -= delta * 3;
-      });
-    }
-  });
 
   const rollerCount = Math.floor(length / 0.8);
   const rollerSpacing = length / rollerCount;
@@ -50,8 +39,8 @@ export function AssemblyPath({ startX, endX, y = 0.05, z = 0 }: AssemblyPathProp
         <meshStandardMaterial color="#f59e0b" roughness={0.4} metalness={0.8} />
       </mesh>
 
-      {/* Conveyor Rollers */}
-      <group ref={rollersRef}>
+      {/* Conveyor Rollers (Heavy-duty stationary steel rollers) */}
+      <group>
         {Array.from({ length: rollerCount }).map((_, i) => {
           const xPos = -length / 2 + (i + 0.5) * rollerSpacing;
           return (

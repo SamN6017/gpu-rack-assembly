@@ -65,7 +65,7 @@ export function StationInspectModal() {
   const nextStationNumber = station.number < 5 ? station.number + 1 : "Completed Bay";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm select-none font-mono">
+    <div className="fixed inset-0 z-[100] isolate flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm select-none font-mono">
       <div className="bg-[#0c121e] border border-sky-500/40 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="bg-[#0f1728] border-b border-slate-800 px-5 py-3.5 flex items-center justify-between">

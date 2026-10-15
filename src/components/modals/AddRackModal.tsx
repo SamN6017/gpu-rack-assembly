@@ -24,7 +24,7 @@ export function AddRackModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm select-none font-mono">
+    <div className="fixed inset-0 z-[100] isolate flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm select-none font-mono">
       <div className="bg-[#0c121e] border border-purple-500/50 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="bg-[#130f24] border-b border-purple-900/60 px-5 py-4 flex items-center justify-between">
