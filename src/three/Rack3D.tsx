@@ -21,8 +21,12 @@ export function Rack3D({ rack, queueIndex = 0, completedIndex = 0 }: Rack3DProps
   const isSelected = selectedRackId === rack.id;
   const [hovered, setHovered] = useState(false);
 
+  const activeModal = useAssemblyStore((s) => s.activeModal);
+  const speedMultiplier = useAssemblyStore((s) => s.config?.speedMultiplier || 1);
+
   const groupRef = useRef<THREE.Group>(null);
   const ledGroupRef = useRef<THREE.Group>(null);
+  const isInitializedRef = useRef(false);
 
   // Determine Target 3D Coordinates
   let targetPos: [number, number, number] = [0, 0, 0];
@@ -48,23 +52,43 @@ export function Rack3D({ rack, queueIndex = 0, completedIndex = 0 }: Rack3DProps
     targetPos = STATION_COORDINATES[rack.currentStationId];
   }
 
-  // Smooth position lerp in frame loop
+  // Smooth position slide along conveyor rails
   useFrame(({ clock }, delta) => {
-    if (groupRef.current) {
-      groupRef.current.position.x = THREE.MathUtils.damp(
-        groupRef.current.position.x,
-        targetPos[0],
-        12,
-        delta
-      );
-      groupRef.current.position.y = targetPos[1];
-      groupRef.current.position.z = targetPos[2];
+    if (!groupRef.current) return;
 
-      // Subtle vibration while moving along conveyor
-      if (rack.status === "MOVING") {
-        groupRef.current.position.y += Math.sin(clock.getElapsedTime() * 25) * 0.012;
-      }
+    if (!isInitializedRef.current) {
+      groupRef.current.position.set(targetPos[0], targetPos[1], targetPos[2]);
+      isInitializedRef.current = true;
+      return;
     }
+
+    const currentX = groupRef.current.position.x;
+    const targetX = targetPos[0];
+    const diffX = targetX - currentX;
+
+    // Slide smoothly along conveyor track guide rails
+    const isSliding = Math.abs(diffX) > 0.04;
+    if (isSliding) {
+      if (Math.abs(diffX) > 40) {
+        // Large reset jump (e.g. simulation timeline reset) -> snap
+        groupRef.current.position.x = targetX;
+      } else {
+        // Natural conveyor sliding speed: smooth transition along track
+        const dampFactor = Math.min(10, 3.5 * Math.max(1, Math.sqrt(speedMultiplier)));
+        groupRef.current.position.x = THREE.MathUtils.damp(
+          currentX,
+          targetX,
+          dampFactor,
+          delta
+        );
+        // Subtle conveyor rumble / vibration while sliding on roller bed
+        groupRef.current.position.y = targetPos[1] + Math.sin(clock.getElapsedTime() * 24) * 0.015;
+      }
+    } else {
+      groupRef.current.position.x = targetX;
+      groupRef.current.position.y = targetPos[1];
+    }
+    groupRef.current.position.z = targetPos[2];
 
     // Flicker / pulse server activity LEDs
     if (ledGroupRef.current) {
@@ -81,7 +105,6 @@ export function Rack3D({ rack, queueIndex = 0, completedIndex = 0 }: Rack3DProps
   return (
     <group
       ref={groupRef}
-      position={targetPos}
       onPointerOver={(e) => {
         e.stopPropagation();
         setHovered(true);
@@ -224,9 +247,9 @@ export function Rack3D({ rack, queueIndex = 0, completedIndex = 0 }: Rack3DProps
         </Text>
       </group>
 
-      {/* Hover Floating Quick-Stats Tooltip */}
-      {hovered && !isSelected && (
-        <Html position={[0, 4.3, 0]} center distanceFactor={14} className="pointer-events-none">
+      {/* Hover Floating Quick-Stats Tooltip (hidden when modal is open) */}
+      {hovered && !isSelected && activeModal === "NONE" && (
+        <Html position={[0, 4.3, 0]} center distanceFactor={14} occlude zIndexRange={[10, 0]} className="pointer-events-none">
           <div className="bg-slate-950/95 border border-sky-500/50 rounded-lg p-2.5 shadow-2xl backdrop-blur-md w-56 text-left font-mono pointer-events-none">
             <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
               <span className="font-bold text-sky-400 text-xs tracking-wider">{rack.id}</span>

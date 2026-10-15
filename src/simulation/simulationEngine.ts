@@ -8,15 +8,8 @@ import {
 import { Rack, RackStatus } from "@/types/rack";
 import { Station, StationStatus } from "@/types/station";
 
-export const STATION_COORDINATES: Record<string, [number, number, number]> = {
-  QUEUE: [-28, 0, 0],
-  "STATION-1": [-18, 0, 0],
-  "STATION-2": [-9, 0, 0],
-  "STATION-3": [0, 0, 0],
-  "STATION-4": [9, 0, 0],
-  "STATION-5": [18, 0, 0],
-  COMPLETED: [28, 0, 0],
-};
+import { STATION_COORDINATES } from "@/three/factoryLayout";
+export { STATION_COORDINATES } from "@/three/factoryLayout";
 
 const INITIAL_STATIONS: Station[] = [
   {

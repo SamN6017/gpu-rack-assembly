@@ -1,0 +1,602 @@
+{
+  "Scenarios": [
+    {
+      "scenario_id": "BASELINE",
+      "name": "Baseline",
+      "duration_months": 6,
+      "seed": 42,
+      "demand_multiplier": 1,
+      "lead_time_multiplier": 1,
+      "inventory_multiplier": 1,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "scenario_id": "HIGH-DEMAND",
+      "name": "Higher demand",
+      "duration_months": 6,
+      "seed": 42,
+      "demand_multiplier": 1.25,
+      "lead_time_multiplier": 1,
+      "inventory_multiplier": 1,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "scenario_id": "SLOW-SUPPLY",
+      "name": "Delayed replenishment",
+      "duration_months": 6,
+      "seed": 42,
+      "demand_multiplier": 1,
+      "lead_time_multiplier": 2,
+      "inventory_multiplier": 1,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "scenario_id": "LOW-STOCK",
+      "name": "Reduced initial stock",
+      "duration_months": 6,
+      "seed": 42,
+      "demand_multiplier": 1,
+      "lead_time_multiplier": 1,
+      "inventory_multiplier": 0.5,
+      "provenance": "SYNTHETIC"
+    }
+  ],
+  "DataSources": [
+    {
+      "source_id": "DEMO",
+      "name": "Synthetic demonstration dataset",
+      "source_type": "MANUAL",
+      "connection_status": "NOT_CONNECTED",
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "source_id": "FUTURE-ERP",
+      "name": "Future ERP connector",
+      "source_type": "ERP",
+      "connection_status": "NOT_CONNECTED",
+      "provenance": "PLACEHOLDER"
+    }
+  ],
+  "ScreenshotTranscription": [],
+  "KanbanRules": [
+    {
+      "rule_id": "KR-1",
+      "material_id": "MAT-DEMO-001",
+      "source_location_id": "LOC-WH",
+      "destination_location_id": "LOC-WS1",
+      "number_of_bins": 2,
+      "units_per_bin": 10,
+      "reorder_point": 10,
+      "target_stock": 20,
+      "safety_stock": 5,
+      "lead_time_minutes": 60,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "rule_id": "KR-2",
+      "material_id": "MAT-DEMO-002",
+      "source_location_id": "LOC-WH",
+      "destination_location_id": "LOC-WS2",
+      "number_of_bins": 2,
+      "units_per_bin": 40,
+      "reorder_point": 40,
+      "target_stock": 80,
+      "safety_stock": 20,
+      "lead_time_minutes": 60,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "rule_id": "KR-3",
+      "material_id": "MAT-DEMO-003",
+      "source_location_id": "LOC-WH",
+      "destination_location_id": "LOC-WS3",
+      "number_of_bins": 2,
+      "units_per_bin": 20,
+      "reorder_point": 20,
+      "target_stock": 40,
+      "safety_stock": 10,
+      "lead_time_minutes": 60,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "rule_id": "KR-4",
+      "material_id": "MAT-DEMO-004",
+      "source_location_id": "LOC-WH",
+      "destination_location_id": "LOC-WS4",
+      "number_of_bins": 2,
+      "units_per_bin": 10,
+      "reorder_point": 10,
+      "target_stock": 20,
+      "safety_stock": 5,
+      "lead_time_minutes": 60,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "rule_id": "KR-5",
+      "material_id": "MAT-DEMO-005",
+      "source_location_id": "LOC-WH",
+      "destination_location_id": "LOC-WS5",
+      "number_of_bins": 2,
+      "units_per_bin": 20,
+      "reorder_point": 20,
+      "target_stock": 40,
+      "safety_stock": 10,
+      "lead_time_minutes": 60,
+      "provenance": "SYNTHETIC"
+    }
+  ],
+  "RackModels": [
+    {
+      "model_id": "MODEL-DEMO-001",
+      "model_code": "DEMO-GPU-RACK",
+      "model_name": "Demonstration GPU rack",
+      "provenance": "SYNTHETIC"
+    }
+  ],
+  "Locations": [
+    {
+      "location_id": "LOC-WH",
+      "code": "WH",
+      "name": "Warehouse",
+      "location_type": "WAREHOUSE",
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "location_id": "LOC-KB",
+      "code": "KB",
+      "name": "Kanban staging",
+      "location_type": "KANBAN_STORAGE",
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "location_id": "LOC-WS1",
+      "code": "POU-WS1",
+      "name": "Station 1 point of use",
+      "location_type": "POINT_OF_USE",
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "location_id": "LOC-WS2",
+      "code": "POU-WS2",
+      "name": "Station 2 point of use",
+      "location_type": "POINT_OF_USE",
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "location_id": "LOC-WS3",
+      "code": "POU-WS3",
+      "name": "Station 3 point of use",
+      "location_type": "POINT_OF_USE",
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "location_id": "LOC-WS4",
+      "code": "POU-WS4",
+      "name": "Station 4 point of use",
+      "location_type": "POINT_OF_USE",
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "location_id": "LOC-WS5",
+      "code": "POU-WS5",
+      "name": "Station 5 point of use",
+      "location_type": "POINT_OF_USE",
+      "provenance": "SYNTHETIC"
+    }
+  ],
+  "BOM": [
+    {
+      "bom_id": "BOM-1",
+      "model_id": "MODEL-DEMO-001",
+      "material_id": "MAT-DEMO-001",
+      "station_id": "WS1",
+      "quantity_per_rack": 1,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "bom_id": "BOM-2",
+      "model_id": "MODEL-DEMO-001",
+      "material_id": "MAT-DEMO-002",
+      "station_id": "WS2",
+      "quantity_per_rack": 4,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "bom_id": "BOM-3",
+      "model_id": "MODEL-DEMO-001",
+      "material_id": "MAT-DEMO-003",
+      "station_id": "WS3",
+      "quantity_per_rack": 2,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "bom_id": "BOM-4",
+      "model_id": "MODEL-DEMO-001",
+      "material_id": "MAT-DEMO-004",
+      "station_id": "WS4",
+      "quantity_per_rack": 1,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "bom_id": "BOM-5",
+      "model_id": "MODEL-DEMO-001",
+      "material_id": "MAT-DEMO-005",
+      "station_id": "WS5",
+      "quantity_per_rack": 2,
+      "provenance": "SYNTHETIC"
+    }
+  ],
+  "Inventory": [
+    {
+      "material_id": "MAT-DEMO-001",
+      "location_id": "LOC-WH",
+      "quantity_on_hand": 500,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "material_id": "MAT-DEMO-002",
+      "location_id": "LOC-WH",
+      "quantity_on_hand": 2000,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "material_id": "MAT-DEMO-003",
+      "location_id": "LOC-WH",
+      "quantity_on_hand": 1000,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "material_id": "MAT-DEMO-004",
+      "location_id": "LOC-WH",
+      "quantity_on_hand": 500,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "material_id": "MAT-DEMO-005",
+      "location_id": "LOC-WH",
+      "quantity_on_hand": 1000,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "material_id": "MAT-DEMO-001",
+      "location_id": "LOC-WS1",
+      "quantity_on_hand": 20,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "material_id": "MAT-DEMO-002",
+      "location_id": "LOC-WS2",
+      "quantity_on_hand": 80,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "material_id": "MAT-DEMO-003",
+      "location_id": "LOC-WS3",
+      "quantity_on_hand": 40,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "material_id": "MAT-DEMO-004",
+      "location_id": "LOC-WS4",
+      "quantity_on_hand": 20,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    },
+    {
+      "material_id": "MAT-DEMO-005",
+      "location_id": "LOC-WS5",
+      "quantity_on_hand": 40,
+      "quantity_reserved": 0,
+      "provenance": "SYNTHETIC"
+    }
+  ],
+  "schema_manifest": {
+    "Materials": {
+      "columns": [
+        "material_id",
+        "part_number",
+        "description",
+        "category",
+        "unit_of_measure",
+        "provenance",
+        "source_reference"
+      ],
+      "sample_rows": 5
+    },
+    "RackModels": {
+      "columns": [
+        "model_id",
+        "model_code",
+        "model_name",
+        "provenance"
+      ],
+      "sample_rows": 1
+    },
+    "Workstations": {
+      "columns": [
+        "station_id",
+        "station_code",
+        "name",
+        "sequence",
+        "cycle_time_seconds",
+        "provenance"
+      ],
+      "sample_rows": 5
+    },
+    "BOM": {
+      "columns": [
+        "bom_id",
+        "model_id",
+        "material_id",
+        "station_id",
+        "quantity_per_rack",
+        "provenance"
+      ],
+      "sample_rows": 5
+    },
+    "Locations": {
+      "columns": [
+        "location_id",
+        "code",
+        "name",
+        "location_type",
+        "provenance"
+      ],
+      "sample_rows": 7
+    },
+    "Inventory": {
+      "columns": [
+        "material_id",
+        "location_id",
+        "quantity_on_hand",
+        "quantity_reserved",
+        "provenance"
+      ],
+      "sample_rows": 10
+    },
+    "KanbanRules": {
+      "columns": [
+        "rule_id",
+        "material_id",
+        "source_location_id",
+        "destination_location_id",
+        "number_of_bins",
+        "units_per_bin",
+        "reorder_point",
+        "target_stock",
+        "safety_stock",
+        "lead_time_minutes",
+        "provenance"
+      ],
+      "sample_rows": 5
+    },
+    "ProductionSchedule": {
+      "columns": [
+        "schedule_id",
+        "model_id",
+        "start_date",
+        "end_date",
+        "working_days",
+        "shifts_per_day",
+        "hours_per_shift",
+        "daily_target_racks",
+        "provenance"
+      ],
+      "sample_rows": 1
+    },
+    "Scenarios": {
+      "columns": [
+        "scenario_id",
+        "name",
+        "duration_months",
+        "seed",
+        "demand_multiplier",
+        "lead_time_multiplier",
+        "inventory_multiplier",
+        "provenance"
+      ],
+      "sample_rows": 4
+    },
+    "DataSources": {
+      "columns": [
+        "source_id",
+        "name",
+        "source_type",
+        "connection_status",
+        "provenance"
+      ],
+      "sample_rows": 2
+    },
+    "ActualDataTemplate": {
+      "columns": [
+        "event_id",
+        "event_timestamp",
+        "event_type",
+        "part_number",
+        "source_location",
+        "destination_location",
+        "quantity",
+        "unit",
+        "external_reference",
+        "provenance"
+      ],
+      "sample_rows": 0
+    },
+    "ScreenshotTranscription": {
+      "columns": [
+        "source_image",
+        "sheet_or_section",
+        "row_identifier",
+        "field_name",
+        "visible_value",
+        "verification_status",
+        "notes"
+      ],
+      "sample_rows": 0
+    },
+    "Assumptions": {
+      "columns": [
+        "assumption_id",
+        "parameter",
+        "value",
+        "unit",
+        "status",
+        "rationale"
+      ],
+      "sample_rows": 5
+    }
+  },
+  "ActualDataTemplate": [],
+  "Workstations": [
+    {
+      "station_id": "WS1",
+      "station_code": "WS1",
+      "name": "Frame preparation",
+      "sequence": 1,
+      "cycle_time_seconds": 720,
+      "provenance": "EXISTING_APP_DEFAULT"
+    },
+    {
+      "station_id": "WS2",
+      "station_code": "WS2",
+      "name": "Rail mounting",
+      "sequence": 2,
+      "cycle_time_seconds": 720,
+      "provenance": "EXISTING_APP_DEFAULT"
+    },
+    {
+      "station_id": "WS3",
+      "station_code": "WS3",
+      "name": "Electrical installation",
+      "sequence": 3,
+      "cycle_time_seconds": 720,
+      "provenance": "EXISTING_APP_DEFAULT"
+    },
+    {
+      "station_id": "WS4",
+      "station_code": "WS4",
+      "name": "Cable routing",
+      "sequence": 4,
+      "cycle_time_seconds": 720,
+      "provenance": "EXISTING_APP_DEFAULT"
+    },
+    {
+      "station_id": "WS5",
+      "station_code": "WS5",
+      "name": "Final assembly",
+      "sequence": 5,
+      "cycle_time_seconds": 720,
+      "provenance": "EXISTING_APP_DEFAULT"
+    }
+  ],
+  "Materials": [
+    {
+      "material_id": "MAT-DEMO-001",
+      "part_number": "DEMO-CHASSIS",
+      "description": "Rack chassis",
+      "category": "Mechanical",
+      "unit_of_measure": "EA",
+      "provenance": "SYNTHETIC",
+      "source_reference": "Demo only"
+    },
+    {
+      "material_id": "MAT-DEMO-002",
+      "part_number": "DEMO-RAIL",
+      "description": "Mounting rail",
+      "category": "Mechanical",
+      "unit_of_measure": "EA",
+      "provenance": "SYNTHETIC",
+      "source_reference": "Demo only"
+    },
+    {
+      "material_id": "MAT-DEMO-003",
+      "part_number": "DEMO-BUSBAR",
+      "description": "Busbar",
+      "category": "Electrical",
+      "unit_of_measure": "EA",
+      "provenance": "SYNTHETIC",
+      "source_reference": "Demo only"
+    },
+    {
+      "material_id": "MAT-DEMO-004",
+      "part_number": "DEMO-CABLE",
+      "description": "Cable kit",
+      "category": "Electrical",
+      "unit_of_measure": "KIT",
+      "provenance": "SYNTHETIC",
+      "source_reference": "Demo only"
+    },
+    {
+      "material_id": "MAT-DEMO-005",
+      "part_number": "DEMO-PANEL",
+      "description": "Panel assembly",
+      "category": "Mechanical",
+      "unit_of_measure": "EA",
+      "provenance": "SYNTHETIC",
+      "source_reference": "Demo only"
+    }
+  ],
+  "ProductionSchedule": [
+    {
+      "schedule_id": "SCHED-DEMO-001",
+      "model_id": "MODEL-DEMO-001",
+      "start_date": "2026-01-01",
+      "end_date": "2026-06-30",
+      "working_days": "MON,TUE,WED,THU,FRI",
+      "shifts_per_day": 1,
+      "hours_per_shift": 8,
+      "daily_target_racks": 15,
+      "provenance": "SYNTHETIC"
+    }
+  ],
+  "Assumptions": [
+    {
+      "assumption_id": "A001",
+      "parameter": "Simulation duration",
+      "value": 6,
+      "unit": "calendar months",
+      "status": "ASSUMED",
+      "rationale": "Requested demonstration horizon"
+    },
+    {
+      "assumption_id": "A002",
+      "parameter": "Replenishment lead time",
+      "value": 60,
+      "unit": "minutes",
+      "status": "SYNTHETIC",
+      "rationale": "Editable demo value"
+    },
+    {
+      "assumption_id": "A003",
+      "parameter": "Starting warehouse stock",
+      "value": "See Inventory",
+      "unit": "units",
+      "status": "SYNTHETIC",
+      "rationale": "Not verified from source"
+    },
+    {
+      "assumption_id": "A004",
+      "parameter": "Daily target",
+      "value": 15,
+      "unit": "racks/day",
+      "status": "SYNTHETIC",
+      "rationale": "Editable demo value"
+    },
+    {
+      "assumption_id": "A005",
+      "parameter": "Station cycle time",
+      "value": 720,
+      "unit": "seconds",
+      "status": "EXISTING_APP_DEFAULT",
+      "rationale": "Existing project design"
+    }
+  ]
+}

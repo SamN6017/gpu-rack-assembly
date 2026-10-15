@@ -24,6 +24,8 @@ export function StationInspectModal() {
   const advanceStation = useAssemblyStore((s) => s.advanceStation);
   const toggleStationBlock = useAssemblyStore((s) => s.toggleStationBlock);
   const openModal = useAssemblyStore((s) => s.openModal);
+  const manufacturing = useAssemblyStore((s) => s.manufacturing);
+  const manufacturingConfig = useAssemblyStore((s) => s.manufacturingConfig);
 
   if (activeModal !== "STATION" || !inspectedStationId) return null;
 
@@ -38,7 +40,7 @@ export function StationInspectModal() {
   let progressPct = 0;
 
   if (station.rackId && rack && station.enteredAt) {
-    const elapsedSec = Math.max(0, (Date.now() - station.enteredAt) / 1000);
+    const elapsedSec = Math.max(0, ((useAssemblyStore.getState().virtualTime ?? Date.now()) - station.enteredAt) / 1000);
     const duration = station.durationSeconds || 720;
     const remainingSec = Math.max(0, duration - elapsedSec);
     progressPct = Math.min(100, Math.round((elapsedSec / duration) * 100));
@@ -65,7 +67,7 @@ export function StationInspectModal() {
   const nextStationNumber = station.number < 5 ? station.number + 1 : "Completed Bay";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm select-none font-mono">
+    <div className="fixed inset-0 z-[100] isolate flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm select-none font-mono">
       <div className="bg-[#0c121e] border border-sky-500/40 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="bg-[#0f1728] border-b border-slate-800 px-5 py-3.5 flex items-center justify-between">
@@ -145,6 +147,72 @@ export function StationInspectModal() {
             )}
           </div>
 
+          {/* Workstation Point-of-Use Inventory & Kanban Status */}
+          <div className="bg-slate-950/80 rounded-xl p-3.5 border border-slate-800 space-y-2.5">
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+              <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
+                Station Inventory & Pull Kanban Rules
+              </span>
+              <span className="text-[10px] text-slate-500 font-mono">
+                {manufacturingConfig?.materials.filter((m) => m.station === station.number - 1).length || 0} Assigned Parts
+              </span>
+            </div>
+
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+              {manufacturingConfig?.materials
+                .filter((m) => m.station === station.number - 1)
+                .map((m) => {
+                  const stock = manufacturing?.stocks.find((s) => s.id === m.id);
+                  const onHand = stock?.onHand ?? m.pointOfUse;
+                  const reserved = stock?.reserved ?? 0;
+                  const isShortage = onHand <= m.safetyStock;
+                  const isReplenishing = (stock?.onOrder ?? 0) > 0;
+                  const activeOrder = manufacturing?.orders.find((o) => o.materialId === m.id);
+
+                  return (
+                    <div
+                      key={m.id}
+                      className="p-2 rounded-lg bg-slate-900/90 border border-slate-800/80 text-xs space-y-1"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-slate-200">{m.partNumber}</span>
+                        <span
+                          className={`text-[9px] font-bold px-1.5 py-0.2 rounded border ${
+                            isShortage
+                              ? "bg-rose-950 text-rose-300 border-rose-700"
+                              : isReplenishing
+                                ? "bg-amber-950 text-amber-300 border-amber-700"
+                                : "bg-emerald-950 text-emerald-300 border-emerald-700"
+                          }`}
+                        >
+                          {isShortage ? "SHORTAGE" : isReplenishing ? "REPLENISHING" : "AVAILABLE"}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-slate-400 truncate">{m.description}</div>
+                      <div className="grid grid-cols-3 gap-1 text-[10px] pt-1 border-t border-slate-800/60 text-slate-400">
+                        <div>
+                          On-Hand: <strong className="text-white">{onHand}</strong> / {m.bins * m.binCapacity} {m.unit}
+                        </div>
+                        <div>
+                          Reserved: <strong className="text-cyan-300">{reserved}</strong> {m.unit}
+                        </div>
+                        <div>
+                          Reorder At: <strong className="text-amber-400">{m.reorderPoint}</strong> {m.unit}
+                        </div>
+                      </div>
+                      {activeOrder && (
+                        <div className="text-[9px] text-sky-400 bg-sky-950/40 px-1.5 py-0.5 rounded flex items-center justify-between border border-sky-900/50">
+                          <span>Handler #{activeOrder.handler + 1} ({activeOrder.status})</span>
+                          <span>ETA: {new Date(activeOrder.delivery).toLocaleTimeString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+
           {/* Interactive Fast Actions */}
           <div className="flex items-center space-x-2 pt-1">
             {station.rackId ? (
@@ -160,6 +228,7 @@ export function StationInspectModal() {
                   <span>Fast-Advance Station</span>
                 </button>
                 <button
+                  disabled={useAssemblyStore.getState().readOnly}
                   onClick={() => toggleStationBlock(station.id)}
                   className={`flex items-center space-x-1 py-2 px-3 rounded-lg text-xs font-semibold border transition ${
                     station.status === "BLOCKED"

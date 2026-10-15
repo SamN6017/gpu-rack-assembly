@@ -7,6 +7,7 @@ import { Terminal, PlusCircle } from "lucide-react";
 
 export function QueueTerminal3D() {
   const openModal = useAssemblyStore((s) => s.openModal);
+  const activeModal = useAssemblyStore((s) => s.activeModal);
 
   return (
     <group position={[-25, 0, 4.5]} rotation={[0, Math.PI, 0]}>
@@ -70,16 +71,18 @@ export function QueueTerminal3D() {
           READY FOR OPERATOR INPUT
         </Text>
 
-        {/* Screen Click Area */}
-        <Html position={[0, 0, 0.09]} center distanceFactor={12} className="pointer-events-auto">
-          <button
-            onClick={() => openModal("ADD_RACK")}
-            className="w-36 py-1 px-2 rounded bg-purple-600/80 hover:bg-purple-500 text-white font-mono text-[10px] font-bold flex items-center justify-center gap-1 shadow-lg transition"
-          >
-            <PlusCircle className="w-3 h-3" />
-            <span>Open Terminal</span>
-          </button>
-        </Html>
+        {/* Screen Click Area (hidden when modal is open) */}
+        {activeModal === "NONE" && (
+          <Html position={[0, 0, 0.09]} center distanceFactor={12} occlude zIndexRange={[10, 0]} className="pointer-events-auto">
+            <button
+              onClick={() => openModal("ADD_RACK")}
+              className="w-36 py-1 px-2 rounded bg-purple-600/80 hover:bg-purple-500 text-white font-mono text-[10px] font-bold flex items-center justify-center gap-1 shadow-lg transition"
+            >
+              <PlusCircle className="w-3 h-3" />
+              <span>Open Terminal</span>
+            </button>
+          </Html>
+        )}
       </group>
 
       {/* Yellow Safety Floor Ring */}

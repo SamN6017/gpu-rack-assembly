@@ -20,7 +20,7 @@ export function EnterFactoryScreen() {
   if (hasEnteredFactory) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md select-none font-mono">
+    <div className="fixed inset-0 z-[100] isolate flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md select-none font-mono">
       <div className="bg-[#0b1120] border border-sky-500/50 rounded-2xl w-full max-w-lg shadow-2xl p-6 sm:p-8 space-y-6 text-center animate-in fade-in zoom-in-95 duration-200">
         {/* Facility Badge */}
         <div className="flex justify-center">

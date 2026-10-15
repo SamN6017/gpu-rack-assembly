@@ -31,3 +31,12 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local database, runtime, uploads and secrets
+.local/
+.env
+.env.*
+!.env.example
+uploads/
+data/raw/*
+!data/raw/README.md

@@ -1,10 +1,24 @@
 # GPU Rack Assembly Facility • 3D Digital Twin
 
+## Manufacturing extension status
+
+Phase 1 adds the PostgreSQL/Prisma foundation, validated master-data APIs, transactional inventory services, deterministic station seed and automated tests. The factory still runs its existing demonstration engine.
+
+- [Database setup, API contract and verification commands](docs/development/database.md)
+- [Phase 1 implementation and verification record](docs/phase-1-completion.md)
+- [Current-system audit (Phase 0 baseline)](docs/architecture/current-system.md)
+- [Target architecture and schema design](docs/architecture/target-system.md)
+- [Phased implementation checklist](docs/implementation-plan.md)
+
+Use Node 22.22.0 (`nvm use`), then `npm ci`. Follow the database guide to configure ignored `.env`, start PostgreSQL, run `npm run db:generate`, `npm run db:deploy`, and `npm run db:seed`. Run `npm test`, `npm run test:integration`, `npm run lint`, `npm run typecheck`, and `npm run build` for verification.
+
+Manufacturing API calls require a server-configured bearer token. The seed creates five stations and their assumed source provenance; no operational stock or manufacturing examples are imported. The supplied workbook/JSON fixtures remain synthetic demonstrations for later import work. The new manufacturing simulation engine, import wizard and operations UI are not part of Phase 1.
+
 An interactive, production-quality 3D digital twin of an automated datacenter GPU rack assembly facility built with **Next.js**, **React Three Fiber (Three.js)**, **TypeScript**, **Tailwind CSS**, and **Zustand**.
 
 ![GPU Rack Assembly Line](https://img.shields.io/badge/Status-Production%20Ready-emerald)
-![Next.js](https://img.shields.io/badge/Next.js-14.2-black)
-![React](https://img.shields.io/badge/React-18-blue)
+![Next.js](https://img.shields.io/badge/Next.js-15.5-black)
+![React](https://img.shields.io/badge/React-19-blue)
 ![Three.js](https://img.shields.io/badge/Three.js-r169-orange)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue)
 
@@ -112,3 +126,7 @@ src/
 
 ## 📄 License
 MIT
+
+### Operations workspace
+
+Open `/data-sources` and enter `MANUFACTURING_API_TOKEN` from your local `.env` to establish an eight-hour browser session. Upload Excel/CSV material catalogs, select and map columns, validate and confirm. Original bytes and row provenance are retained. Assumptions are proposed and approved as immutable versions. See [import implementation record](docs/phase-2-completion.md).

@@ -2,6 +2,7 @@
 
 import React, { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
+import { MaterialFlow } from "./materials/MaterialFlow";
 import { FactoryFloor } from "./FactoryFloor";
 import { Station3D } from "./Station3D";
 import { Rack3D } from "./Rack3D";
@@ -54,6 +55,7 @@ export function FactoryScene() {
         <Suspense fallback={null}>
           {/* Architectural Envelope: Floor, Walls, Ceiling, Trusses, High-Bay Lights */}
           <FactoryFloor />
+          <MaterialFlow />
 
           {/* Central Assembly Line Conveyor */}
           <AssemblyPath startX={-34} endX={34} />

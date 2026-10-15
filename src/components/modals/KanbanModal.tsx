@@ -22,6 +22,9 @@ import {
   FileText,
 } from "lucide-react";
 
+import { VirtualKanbanBoard } from "@/components/kanban/VirtualKanbanBoard";
+import { VirtualKanbanDashboard } from "@/components/kanban/VirtualKanbanDashboard";
+
 export function KanbanModal() {
   const activeModal = useAssemblyStore((s) => s.activeModal);
   const closeModal = useAssemblyStore((s) => s.closeModal);
@@ -37,12 +40,12 @@ export function KanbanModal() {
   const dispatchNextFromQueue = useAssemblyStore((s) => s.dispatchNextFromQueue);
   const openModal = useAssemblyStore((s) => s.openModal);
 
-  const [activeTab, setActiveTab] = useState<"board" | "events">("board");
+  const [activeTab, setActiveTab] = useState<"kanban" | "dashboard" | "stations" | "events">("kanban");
 
   if (activeModal !== "KANBAN") return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-md select-none font-mono">
+    <div className="fixed inset-0 z-[100] isolate flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-md select-none font-mono">
       <div className="bg-[#0b101d] border border-sky-500/50 rounded-2xl w-full max-w-6xl h-[88vh] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Top Header */}
         <div className="bg-[#0f172a] border-b border-slate-800 px-6 py-4 flex items-center justify-between shrink-0">
@@ -68,9 +71,25 @@ export function KanbanModal() {
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
               <button
-                onClick={() => setActiveTab("board")}
+                onClick={() => setActiveTab("kanban")}
                 className={`px-3 py-1 rounded text-xs font-semibold transition ${
-                  activeTab === "board" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                  activeTab === "kanban" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Virtual Kanban Board
+              </button>
+              <button
+                onClick={() => setActiveTab("dashboard")}
+                className={`px-3 py-1 rounded text-xs font-semibold transition ${
+                  activeTab === "dashboard" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Kanban Dashboard
+              </button>
+              <button
+                onClick={() => setActiveTab("stations")}
+                className={`px-3 py-1 rounded text-xs font-semibold transition ${
+                  activeTab === "stations" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
                 }`}
               >
                 Line Stations
@@ -154,7 +173,11 @@ export function KanbanModal() {
 
         {/* Modal Main Body */}
         <div className="flex-1 p-6 overflow-y-auto">
-          {activeTab === "board" ? (
+          {activeTab === "kanban" ? (
+            <VirtualKanbanBoard />
+          ) : activeTab === "dashboard" ? (
+            <VirtualKanbanDashboard />
+          ) : activeTab === "stations" ? (
             <div className="grid grid-cols-7 gap-3.5 h-full min-h-[460px]">
               {/* Column 1: Queue */}
               <div className="bg-[#0e1424] border border-purple-900/50 rounded-xl p-3 flex flex-col justify-between">
@@ -198,15 +221,16 @@ export function KanbanModal() {
 
                 <div className="pt-2 border-t border-slate-800 space-y-1.5">
                   <button
+                    disabled={useAssemblyStore.getState().readOnly || queueRackIds.length === 0}
                     onClick={() => dispatchNextFromQueue()}
-                    disabled={queueRackIds.length === 0}
                     className="w-full py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:bg-slate-900 disabled:text-slate-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition"
                   >
                     <span>Dispatch Next</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() => openModal("ADD_RACK")}
+                    disabled={useAssemblyStore.getState().readOnly}
+                  onClick={() => openModal("ADD_RACK")}
                     className="w-full py-1.5 rounded-lg bg-purple-950/80 hover:bg-purple-900 border border-purple-800/80 text-purple-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
                   >
                     <PlusCircle className="w-3.5 h-3.5" />
@@ -223,7 +247,7 @@ export function KanbanModal() {
                 let elapsed = "00:00";
 
                 if (stn.rackId && rack && stn.enteredAt) {
-                  const el = Math.max(0, (Date.now() - stn.enteredAt) / 1000);
+                  const el = Math.max(0, ((useAssemblyStore.getState().virtualTime ?? Date.now()) - stn.enteredAt) / 1000);
                   const dur = stn.durationSeconds || 720;
                   const rem = Math.max(0, dur - el);
                   prog = Math.min(100, Math.round((el / dur) * 100));
@@ -319,7 +343,8 @@ export function KanbanModal() {
                     {stn.rackId && (
                       <div className="pt-2 border-t border-slate-800/80 flex items-center space-x-1">
                         <button
-                          onClick={() => advanceStation(stn.id)}
+                          disabled={useAssemblyStore.getState().readOnly}
+                  onClick={() => advanceStation(stn.id)}
                           className="flex-1 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-bold flex items-center justify-center gap-1 transition"
                           title="Advance station immediately"
                         >
@@ -327,7 +352,8 @@ export function KanbanModal() {
                           <span>Advance</span>
                         </button>
                         <button
-                          onClick={() => toggleStationBlock(stn.id)}
+                          disabled={useAssemblyStore.getState().readOnly}
+                  onClick={() => toggleStationBlock(stn.id)}
                           className={`px-2 py-1 rounded text-[10px] font-bold border transition ${
                             stn.status === "BLOCKED"
                               ? "bg-emerald-600 text-white border-emerald-500"

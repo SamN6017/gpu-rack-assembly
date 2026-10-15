@@ -39,6 +39,11 @@ export interface ProductionEvent {
 }
 
 export interface AssemblySnapshot {
+  mode?: "SIMULATION" | "LIVE" | "REPLAY" | "LEGACY_DEMO";
+  virtualTime?: number;
+  readOnly?: boolean;
+  manufacturing?: import("@/simulation/core/types").Snapshot;
+  manufacturingConfig?: import("@/simulation/core/types").SimulationConfig;
   stations: Station[];
   racks: Record<string, Rack>;
   queueRackIds: string[];

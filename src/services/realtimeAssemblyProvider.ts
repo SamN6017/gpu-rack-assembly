@@ -1,32 +1,62 @@
 import { IAssemblyDataProvider } from "./assemblyDataProvider";
 import { AssemblySnapshot, SimulationSpeed } from "@/types/assembly";
+import {
+  ReadOnlyEventAdapter,
+  ConnectionState,
+} from "./adapters";
+import { EventProjection } from "@/domain/manufacturing/manufacturingEvent";
 
 /**
- * RealtimeAssemblyProvider
- * Prepared architecture for live factory IoT telemetry and manufacturing execution systems (MES).
- * Communicates via WebSocket / Server-Sent Events / MQTT broker.
+ * Real-time assembly provider for live factory streaming.
+ * External data is strictly read-only; all outbound control commands throw errors.
  */
 export class RealtimeAssemblyProvider implements IAssemblyDataProvider {
-  private ws: WebSocket | null = null;
-  private endpointUrl: string;
-  private listeners: Set<(snapshot: AssemblySnapshot) => void> = new Set();
-  private currentSnapshot: AssemblySnapshot | null = null;
+  readonly isReadOnly = true;
+  private listeners = new Set<(snapshot: AssemblySnapshot) => void>();
+  private disconnect: (() => void) | null = null;
+  readonly projection = new EventProjection();
+  connection: ConnectionState = { status: "DISCONNECTED", lastReceived: null };
 
-  constructor(endpointUrl: string = "wss://api.factory-twin.internal/v1/assembly-feed") {
-    this.endpointUrl = endpointUrl;
-  }
+  constructor(
+    private adapter?: ReadOnlyEventAdapter,
+    private currentSnapshot?: AssemblySnapshot,
+  ) {}
 
-  public async initialize(): Promise<AssemblySnapshot> {
-    // In production, fetch initial state snapshot via HTTP GET /v1/assembly/snapshot
-    // and establish WebSocket connection for live telemetry stream.
-    if (this.currentSnapshot) {
-      return this.currentSnapshot;
+  async initialize(): Promise<AssemblySnapshot> {
+    if (!this.adapter || !this.currentSnapshot) {
+      throw new Error(
+        "An authorized adapter and confirmed initial snapshot are required",
+      );
     }
-    // Return fallback / mock until live connection established
-    throw new Error("Realtime endpoint not configured in prototype environment. Switch to MockAssemblyDataProvider.");
+
+    this.currentSnapshot = {
+      ...this.currentSnapshot,
+      mode: "LIVE",
+      readOnly: true,
+    };
+
+    this.disconnect = this.adapter.connect(
+      (event) => {
+        this.projection.ingest(event);
+        if (this.currentSnapshot) {
+          this.currentSnapshot = {
+            ...this.currentSnapshot,
+            virtualTime: Date.parse(event.sourceTimestamp),
+          };
+          for (const listener of this.listeners) {
+            listener(this.currentSnapshot);
+          }
+        }
+      },
+      (status) => {
+        this.connection = status;
+      },
+    );
+
+    return this.currentSnapshot;
   }
 
-  public subscribe(listener: (snapshot: AssemblySnapshot) => void): () => void {
+  subscribe(listener: (snapshot: AssemblySnapshot) => void): () => void {
     this.listeners.add(listener);
     if (this.currentSnapshot) {
       listener(this.currentSnapshot);
@@ -36,71 +66,44 @@ export class RealtimeAssemblyProvider implements IAssemblyDataProvider {
     };
   }
 
-  public addRackToQueue(modelName?: string): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "QUEUE_RACK", modelName }));
-    }
+  // --- Strict Read-Only Capability Enforcement ---
+  addRackToQueue(): void {
+    throw new Error("Live mode is strictly read-only: factory control commands are prohibited.");
   }
 
-  public dispatchNextFromQueue(): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "DISPATCH_QUEUE" }));
-    }
+  dispatchNextFromQueue(): void {
+    throw new Error("Live mode is strictly read-only: factory control commands are prohibited.");
   }
 
-  public removeRackFromQueue(rackId: string): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "REMOVE_QUEUE_RACK", rackId }));
-    }
+  removeRackFromQueue(): void {
+    throw new Error("Live mode is strictly read-only: factory control commands are prohibited.");
   }
 
-  public advanceStation(stationId: string): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "ADVANCE_STATION", stationId }));
-    }
+  advanceStation(): void {
+    throw new Error("Live mode is strictly read-only: factory control commands are prohibited.");
   }
 
-  public toggleStationBlock(stationId: string): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "TOGGLE_BLOCK", stationId }));
-    }
+  toggleStationBlock(): void {
+    throw new Error("Live mode is strictly read-only: factory control commands are prohibited.");
   }
 
-  public stressTestRack(rackId: string): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "STRESS_TEST", rackId }));
-    }
+  stressTestRack(): void {
+    throw new Error("Live mode is strictly read-only: factory control commands are prohibited.");
   }
 
-  public setPaused(paused: boolean): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "SET_PAUSED", paused }));
-    }
+  resetSimulation(): void {
+    throw new Error("Live mode is strictly read-only: resetting real factory state is prohibited.");
   }
 
-  public setSpeed(speed: SimulationSpeed): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "SET_SPEED", speed }));
-    }
-  }
+  setPaused(): void {}
 
-  public setDemoMode(isDemo: boolean): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "SET_DEMO_MODE", isDemo }));
-    }
-  }
+  setSpeed(_speed: SimulationSpeed): void {}
 
-  public resetSimulation(): void {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ action: "RESET" }));
-    }
-  }
+  setDemoMode(): void {}
 
-  public destroy(): void {
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
+  destroy(): void {
+    this.disconnect?.();
     this.listeners.clear();
+    this.connection = { status: "DISCONNECTED", lastReceived: null };
   }
 }

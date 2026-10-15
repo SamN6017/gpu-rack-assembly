@@ -6,6 +6,7 @@ import { useAssemblyStore } from "@/store/assemblyStore";
 import { Inbox, PlusCircle, ArrowRight, Server, Trash2 } from "lucide-react";
 
 export function QueueBay3D() {
+  const activeModal = useAssemblyStore((s) => s.activeModal);
   const queueRackIds = useAssemblyStore((s) => s.queueRackIds);
   const racks = useAssemblyStore((s) => s.racks);
   const addRackToQueue = useAssemblyStore((s) => s.addRackToQueue);
@@ -106,13 +107,16 @@ export function QueueBay3D() {
         </group>
       </group>
 
-      {/* Interactive Queue Dispatch & Add HUD */}
-      <Html
-        position={[2.5, 7.3, 0]}
-        center
-        distanceFactor={26}
-        className="pointer-events-auto select-none"
-      >
+      {/* Interactive Queue Dispatch & Add HUD (hidden when modal is open) */}
+      {activeModal === "NONE" && (
+        <Html
+          position={[2.5, 7.3, 0]}
+          center
+          distanceFactor={26}
+          occlude
+          zIndexRange={[10, 0]}
+          className="pointer-events-auto select-none"
+        >
         <div className="flex flex-col items-center space-y-1.5 font-mono">
           <div className="bg-slate-950/95 border border-purple-500/70 p-2 rounded-xl shadow-2xl backdrop-blur-md flex items-center space-x-2 text-xs">
             <div className="flex items-center space-x-1.5 text-purple-400 font-bold px-1.5 py-0.5 bg-purple-950/80 rounded border border-purple-800/60">
@@ -170,6 +174,7 @@ export function QueueBay3D() {
           )}
         </div>
       </Html>
+      )}
     </group>
   );
 }
