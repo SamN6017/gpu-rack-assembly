@@ -22,6 +22,9 @@ import {
   FileText,
 } from "lucide-react";
 
+import { VirtualKanbanBoard } from "@/components/kanban/VirtualKanbanBoard";
+import { VirtualKanbanDashboard } from "@/components/kanban/VirtualKanbanDashboard";
+
 export function KanbanModal() {
   const activeModal = useAssemblyStore((s) => s.activeModal);
   const closeModal = useAssemblyStore((s) => s.closeModal);
@@ -37,7 +40,7 @@ export function KanbanModal() {
   const dispatchNextFromQueue = useAssemblyStore((s) => s.dispatchNextFromQueue);
   const openModal = useAssemblyStore((s) => s.openModal);
 
-  const [activeTab, setActiveTab] = useState<"board" | "events">("board");
+  const [activeTab, setActiveTab] = useState<"kanban" | "dashboard" | "stations" | "events">("kanban");
 
   if (activeModal !== "KANBAN") return null;
 
@@ -68,9 +71,25 @@ export function KanbanModal() {
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
               <button
-                onClick={() => setActiveTab("board")}
+                onClick={() => setActiveTab("kanban")}
                 className={`px-3 py-1 rounded text-xs font-semibold transition ${
-                  activeTab === "board" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                  activeTab === "kanban" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Virtual Kanban Board
+              </button>
+              <button
+                onClick={() => setActiveTab("dashboard")}
+                className={`px-3 py-1 rounded text-xs font-semibold transition ${
+                  activeTab === "dashboard" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Kanban Dashboard
+              </button>
+              <button
+                onClick={() => setActiveTab("stations")}
+                className={`px-3 py-1 rounded text-xs font-semibold transition ${
+                  activeTab === "stations" ? "bg-sky-600 text-white" : "text-slate-400 hover:text-white"
                 }`}
               >
                 Line Stations
@@ -154,7 +173,11 @@ export function KanbanModal() {
 
         {/* Modal Main Body */}
         <div className="flex-1 p-6 overflow-y-auto">
-          {activeTab === "board" ? (
+          {activeTab === "kanban" ? (
+            <VirtualKanbanBoard />
+          ) : activeTab === "dashboard" ? (
+            <VirtualKanbanDashboard />
+          ) : activeTab === "stations" ? (
             <div className="grid grid-cols-7 gap-3.5 h-full min-h-[460px]">
               {/* Column 1: Queue */}
               <div className="bg-[#0e1424] border border-purple-900/50 rounded-xl p-3 flex flex-col justify-between">

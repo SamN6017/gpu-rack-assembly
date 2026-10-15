@@ -11,6 +11,8 @@ import { Station } from "@/types/station";
 import { MockAssemblyDataProvider } from "@/services/mockAssemblyProvider";
 import { IAssemblyDataProvider } from "@/services/assemblyDataProvider";
 import { SimulationAssemblyProvider } from "@/services/simulationAssemblyProvider";
+import { RealtimeAssemblyProvider } from "@/services/realtimeAssemblyProvider";
+import { MockLiveAdapter } from "@/services/adapters/mockLiveAdapter";
 
 export type ViewMode = "WALK" | "OVERVIEW";
 export type ActiveModal = "NONE" | "KANBAN" | "STATION" | "RACK" | "ADD_RACK" | "HELP";
@@ -78,6 +80,7 @@ interface AssemblyState {
   stressTestRack: (rackId: string) => void;
   resetSimulation: () => void;
   setCameraPreset: (preset: "Overview" | "Station 1" | "Station 2" | "Station 3" | "Station 4" | "Station 5" | "Queue" | "Completed" | "Kanban") => void;
+  setOperatingMode: (mode: "SIMULATION" | "LIVE") => void;
 }
 
 let activeProvider: IAssemblyDataProvider | null = null;
@@ -85,6 +88,30 @@ let unsubscribe: (() => void) | null = null;
 
 export const useAssemblyStore = create<AssemblyState>((set, get) => ({
   mode: "SIMULATION", readOnly: true,
+  setOperatingMode: (targetMode) => {
+    if (targetMode === "LIVE") {
+      const s = get();
+      const initialSnapshot: AssemblySnapshot = {
+        mode: "LIVE",
+        virtualTime: s.virtualTime ?? Date.now(),
+        readOnly: true,
+        manufacturing: s.manufacturing,
+        manufacturingConfig: s.manufacturingConfig,
+        stations: s.stations,
+        racks: s.racks,
+        queueRackIds: s.queueRackIds,
+        completedRackIds: s.completedRackIds,
+        metrics: s.metrics,
+        events: s.events,
+        config: s.config,
+        selectedStationId: s.selectedStationId,
+        selectedRackId: s.selectedRackId,
+      };
+      get().useProvider(new RealtimeAssemblyProvider(new MockLiveAdapter(), initialSnapshot));
+    } else {
+      get().useProvider(new SimulationAssemblyProvider());
+    }
+  },
   useProvider: (provider) => {
     unsubscribe?.(); activeProvider?.destroy(); activeProvider=provider;
     const apply=(snapshot:AssemblySnapshot)=>set({stations:snapshot.stations,racks:snapshot.racks,queueRackIds:snapshot.queueRackIds,completedRackIds:snapshot.completedRackIds,metrics:snapshot.metrics,events:snapshot.events,config:snapshot.config,mode:snapshot.mode||"LEGACY_DEMO",virtualTime:snapshot.virtualTime,readOnly:snapshot.readOnly??false,manufacturing:snapshot.manufacturing,manufacturingConfig:snapshot.manufacturingConfig});

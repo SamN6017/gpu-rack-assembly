@@ -30,9 +30,26 @@ export function Station3D({ station, rack }: Station3DProps) {
   const selectRack = useAssemblyStore((s) => s.selectRack);
   const advanceStation = useAssemblyStore((s) => s.advanceStation);
   const toggleStationBlock = useAssemblyStore((s) => s.toggleStationBlock);
+  const manufacturing = useAssemblyStore((s) => s.manufacturing);
+  const manufacturingConfig = useAssemblyStore((s) => s.manufacturingConfig);
   const isSelected = selectedStationId === station.id;
 
   const [hovered, setHovered] = useState(false);
+
+  // Compute active shortage & replenishment orders for this station
+  const activeReplenishmentOrder = manufacturing?.orders.find((o) => {
+    const mat = manufacturingConfig?.materials.find((m) => m.id === o.materialId);
+    return mat && mat.station === station.number - 1;
+  });
+
+  const hasMaterialShortage =
+    station.status === "BLOCKED" ||
+    (manufacturingConfig?.materials
+      .filter((m) => m.station === station.number - 1)
+      .some((m) => {
+        const s = manufacturing?.stocks.find((stk) => stk.id === m.id);
+        return s && s.onHand <= m.safetyStock;
+      }) ?? false);
   const beaconLightRef = useRef<THREE.PointLight>(null);
   const robotArmRef = useRef<THREE.Group>(null);
 
@@ -242,8 +259,8 @@ export function Station3D({ station, rack }: Station3DProps) {
         />
       </group>
 
-      {/* Contextual Overhead Status Chip (Only visible on hover, selection, or blocked state; hidden when modal is open) */}
-      {activeModal === "NONE" && (hovered || isSelected || station.status === "BLOCKED") && (
+      {/* Contextual Overhead Status Chip (Only visible on hover, selection, blocked state, or material shortage; hidden when modal is open) */}
+      {activeModal === "NONE" && (hovered || isSelected || station.status === "BLOCKED" || hasMaterialShortage) && (
         <Html
           position={[0, 7.2, 0]}
           center
@@ -266,6 +283,8 @@ export function Station3D({ station, rack }: Station3DProps) {
               className={`flex items-center space-x-2 px-3 py-1 rounded-full border shadow-xl backdrop-blur-md cursor-pointer font-mono text-xs transition ${
                 isSelected
                   ? "bg-slate-900 border-sky-400 ring-2 ring-sky-400/50 text-white"
+                  : hasMaterialShortage
+                  ? "bg-rose-950/95 border-rose-500 text-rose-300 animate-pulse"
                   : station.status === "BLOCKED"
                   ? "bg-rose-950/90 border-rose-500/80 text-rose-300 animate-pulse"
                   : station.status === "RUNNING"
@@ -276,11 +295,18 @@ export function Station3D({ station, rack }: Station3DProps) {
               }`}
             >
               <span className="font-bold">STN {station.number}</span>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeColor }} />
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: hasMaterialShortage ? "#ef4444" : activeColor }} />
               <span className="text-[11px] font-medium">
-                {station.rackId ? `${station.rackId}` : "EMPTY"}
+                {hasMaterialShortage
+                  ? "MATERIAL SHORTAGE"
+                  : station.rackId ? `${station.rackId}` : "EMPTY"}
               </span>
-              {station.rackId && (
+              {activeReplenishmentOrder && (
+                <span className="text-[10px] text-amber-300 bg-amber-950/80 px-1.5 py-0.2 rounded border border-amber-700 font-bold">
+                  {activeReplenishmentOrder.id}
+                </span>
+              )}
+              {station.rackId && !hasMaterialShortage && (
                 <span className="text-[10px] text-slate-400 border-l border-slate-700 pl-1.5 font-bold">
                   {clockTime}
                 </span>

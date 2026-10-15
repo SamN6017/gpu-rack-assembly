@@ -108,15 +108,34 @@ export function reportSections(r: ReportInput): Section[] {
       }),
     },
     {
-      title: "Kanban analysis",
+      title: "Material consumption and production throughput",
       headers: [
         "Part",
-        "Requests",
-        "Stockouts",
-        "Lead minutes (configured)",
-        "On order",
-        "Reorder point",
-        "Capacity",
+        "Unit",
+        "Total Consumed",
+        "POU Remaining",
+        "Warehouse Remaining",
+        "Throughput (racks / hr)",
+      ],
+      rows: a.materials.map((m) => [
+        m.partNumber,
+        m.unit,
+        m.consumed,
+        m.onHand,
+        m.warehouse,
+        Number(a.throughputPerWorkingHour.toFixed(2)),
+      ]),
+    },
+    {
+      title: "Replenishment performance",
+      headers: [
+        "Part",
+        "Kanban Requests",
+        "Stockout Incidents",
+        "Lead Minutes",
+        "On Order",
+        "Reorder Point",
+        "Bin Capacity",
         "Coverage (working days)",
       ],
       rows: a.materials.map((m) => [
@@ -130,6 +149,23 @@ export function reportSections(r: ReportInput): Section[] {
         m.coverageWorkingDays !== null
           ? Number(m.coverageWorkingDays.toFixed(1))
           : "No demand",
+      ]),
+    },
+    {
+      title: "Material shortages and workstation delays",
+      headers: [
+        "Station",
+        "Material Shortage (hours)",
+        "Downstream Blocked (hours)",
+        "Equipment Downtime (hours)",
+        "Utilization %",
+      ],
+      rows: a.stations.map((s) => [
+        s.station,
+        Number((s.shortageSeconds / 3600).toFixed(2)),
+        Number((s.blockedSeconds / 3600).toFixed(2)),
+        Number((s.equipmentSeconds / 3600).toFixed(2)),
+        Number((s.utilization * 100).toFixed(1)),
       ]),
     },
     {
